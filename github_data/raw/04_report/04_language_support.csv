@@ -1,0 +1,14 @@
+﻿type,language,percentage,priority
+voice,영어,100,필수
+voice,중국어 간체,42,권장
+voice,일본어,35,선택
+interface,영어,100,필수
+interface,중국어 간체,92,필수
+interface,한국어,70,권장
+interface,일본어,68,권장
+interface,중국어 번체,54,권장
+subtitle,영어,100,필수
+subtitle,중국어 간체,92,필수
+subtitle,한국어,72,권장
+subtitle,일본어,70,권장
+subtitle,러시아어,58,선택

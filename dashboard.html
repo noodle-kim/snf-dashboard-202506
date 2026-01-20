@@ -1,0 +1,3192 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026년 2월 Steam Next Fest 분석 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <style>
+        :root {
+            /* Modern Dashboard Light Theme - 색상 팔레트 */
+            /* 배경 계층 */
+            --eui-page-background: #F8FAFC;
+            --eui-body-background: #F1F5F9;
+            --eui-panel-background: #FFFFFF;
+            --eui-panel-subdued: #F8FAFC;
+            --eui-panel-highlight: #F1F5F9;
+            
+            /* 테두리 */
+            --eui-border-base: #E2E8F0;
+            --eui-border-light: #F1F5F9;
+            --eui-border-strong: #CBD5E1;
+            
+            /* 프라이머리 - Cobalt Blue */
+            --eui-primary: #0047AB;
+            --eui-primary-light: #60A5FA;
+            --eui-primary-dark: #003380;
+            
+            /* 보조 색상 */
+            --eui-success: #10B981;
+            --eui-warning: #F59E0B;
+            --eui-danger: #EF4444;
+            --eui-accent: #8B5CF6;
+            
+            /* 텍스트 색상 */
+            --eui-text-primary: #1E293B;
+            --eui-text-secondary: #64748B;
+            --eui-text-subdued: #94A3B8;
+            --eui-text-disabled: #CBD5E1;
+            
+            /* 데이터 시각화 색상 */
+            --eui-vis-0: #0047AB;
+            --eui-vis-1: #3B82F6;
+            --eui-vis-2: #8B5CF6;
+            --eui-vis-3: #06B6D4;
+            --eui-vis-4: #EC4899;
+            --eui-vis-5: #F59E0B;
+            --eui-vis-6: #10B981;
+            --eui-vis-7: #F97316;
+            --eui-vis-8: #EF4444;
+            --eui-vis-9: #6366F1;
+            
+            /* 레거시 호환 변수 (점진적 마이그레이션용) */
+            --apple-bg: var(--eui-page-background);
+            --apple-surface: var(--eui-panel-background);
+            --apple-surface-2: var(--eui-panel-subdued);
+            --apple-surface-3: var(--eui-panel-highlight);
+            --blue-1: var(--eui-primary);
+            --blue-2: var(--eui-primary-dark);
+            --blue-3: #3B82F6;
+            --blue-4: var(--eui-primary-light);
+            --blue-5: #003380;
+            --text-primary: var(--eui-text-primary);
+            --text-secondary: var(--eui-text-secondary);
+            --text-tertiary: var(--eui-text-subdued);
+            --text-accent: var(--eui-primary);
+            --gray-1: #94A3B8;
+            --gray-2: #64748B;
+            --gray-3: #475569;
+            --positive: var(--eui-success);
+            --negative: var(--eui-danger);
+            --apple-separator: var(--eui-border-base);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--apple-bg);
+            color: var(--text-primary);
+        }
+        
+        .sidebar {
+            background: #FFFFFF;
+            box-shadow: 1px 0 0 var(--apple-separator);
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: var(--eui-text-secondary);
+            border-radius: 8px;
+        }
+        
+        .sidebar-item:hover {
+            background: #F1F5F9;
+            border-left-color: var(--eui-primary);
+            color: var(--eui-text-primary);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(0, 71, 171, 0.1);
+            border-left-color: var(--eui-primary);
+            color: var(--eui-primary);
+            font-weight: 600;
+        }
+        
+        .content-panel {
+            background: var(--eui-panel-background);
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .chart-container {
+            position: relative;
+            animation: slideIn 0.6s ease;
+        }
+        
+        .stat-card {
+            background: #FFFFFF;
+            border: 1px solid var(--eui-border-base);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: var(--eui-primary);
+        }
+        
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--eui-text-primary);
+            animation: countUp 1s ease;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .section-title {
+            color: var(--eui-text-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--eui-border-base);
+        }
+        
+        .data-table {
+            background: var(--eui-panel-background);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--eui-border-base);
+        }
+        
+        .data-table th {
+            background: #F8FAFC;
+            color: var(--eui-text-secondary);
+            font-weight: 600;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--eui-border-base);
+        }
+        
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--eui-border-base);
+            color: var(--eui-text-primary);
+            font-size: 14px;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(0, 71, 171, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: none;
+        }
+        
+        .badge-negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+            border: none;
+        }
+        
+        .badge-neutral {
+            background: #F1F5F9;
+            color: var(--eui-text-secondary);
+            border: none;
+        }
+        
+        .page-section {
+            display: none !important;
+        }
+        
+        .page-section.active {
+            display: block !important;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 1000;
+                width: 280px;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0047AB, #2563EB);
+            transition: width 1s ease;
+            animation: progressFill 1.5s ease;
+        }
+        
+        @keyframes progressFill {
+            from {
+                width: 0;
+            }
+        }
+        
+        .insight-box {
+            background: rgba(0, 71, 171, 0.08);
+            border-left: 4px solid var(--eui-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 bg-slate-50">
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn fixed top-4 left-4 z-50 bg-white p-3 rounded-xl border border-slate-200 shadow-sm" onclick="toggleSidebar()">
+        <svg class="w-6 h-6 text-[#0047AB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar w-80 p-6 flex flex-col">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-slate-800 mb-2">🎮 Steam Next Fest</h1>
+                <p class="text-sm text-slate-500">2026년 2월 분석 대시보드</p>
+            </div>
+            
+            <nav class="flex-1">
+                <ul class="space-y-2">
+                    <li>
+                        <button class="sidebar-item active w-full text-left px-4 py-3 rounded-xl" onclick="showPage('executive')">
+                            <span class="text-lg mr-2">🎯</span> 핵심 요약
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-item w-full text-left px-4 py-3 rounded-xl" onclick="showPage('top-games')">
+                            <span class="text-lg mr-2">🏆</span> TOP 게임 분석
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-item w-full text-left px-4 py-3 rounded-xl" onclick="showPage('charts')">
+                            <span class="text-lg mr-2">📈</span> 차트 성과 분석
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-item w-full text-left px-4 py-3 rounded-xl" onclick="showPage('report')">
+                            <span class="text-lg mr-2">📋</span> SNF 결산 리포트
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="mt-8 pt-6 border-t border-slate-200">
+                <p class="text-xs text-slate-400">데이터 기준: 2025년 6월 SNF</p>
+                <p class="text-xs text-slate-400 mt-1">업데이트: 2026.01.16</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-auto">
+            <!-- Executive Summary Page -->
+            <section id="executive" class="page-section active">
+                <div class="content-panel p-8 mb-6">
+                    <h2 class="text-[28px] font-bold mb-3 text-slate-800 flex items-center gap-3">
+                        <span>🎯</span> 핵심 요약
+                    </h2>
+                    <p class="text-slate-500 mb-8">2025년 6월 Steam Next Fest 데이터 분석 결과 - 2026년 2월 SNF 준비를 위한 인사이트</p>
+                    
+                    <!-- 2026 전략 권장사항 - 최상단 배치 -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-8">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
+                            <span>🚀</span> 2026년 2월 SNF 성공 전략
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h5 class="font-bold text-[#003380] mb-2 flex items-center gap-2">
+                                    <span>🎮</span> 체험판 필수 준비
+                                </h5>
+                                <ul class="text-sm text-slate-500 space-y-1">
+                                    <li>• SNF 전에 체험판 페이지 활성화</li>
+                                    <li>• 게임의 핵심 재미를 30분 내 전달</li>
+                                    <li>• 튜토리얼은 간결하게, 자유도는 높게</li>
+                                    <li>• 체험판 전용 피드백 채널 운영</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h5 class="font-bold text-[#003380] mb-2 flex items-center gap-2">
+                                    <span>👥</span> 멀티플레이 요소 추가
+                                </h5>
+                                <ul class="text-sm text-slate-500 space-y-1">
+                                    <li>• 협동 또는 경쟁 모드 고려</li>
+                                    <li>• 친구 초대 시스템으로 바이럴 유도</li>
+                                    <li>• 싱글 게임도 리더보드 추가 검토</li>
+                                    <li>• 멀티플레이 서버 안정성 필수</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h5 class="font-bold text-[#003380] mb-2 flex items-center gap-2">
+                                    <span>🌏</span> 중국 시장 진출
+                                </h5>
+                                <ul class="text-sm text-slate-500 space-y-1">
+                                    <li>• 간체 중국어 현지화는 필수</li>
+                                    <li>• 중국 게이머 취향 리서치</li>
+                                    <li>• bilibili 같은 중국 플랫폼 활용</li>
+                                    <li>• 중국 스트리머 협업 고려</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI Cards - Elastic UI 스타일 -->
+                    <div id="kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-xl">🎮</span>
+                                <span id="kpi-change-0" class="text-xs px-2 py-1 bg-emerald-100 text-emerald-600 rounded-lg font-semibold">+16%</span>
+                            </div>
+                            <p id="kpi-value-0" class="text-[32px] font-bold text-slate-800 mb-1">2,600개</p>
+                            <p id="kpi-label-0" class="text-sm text-slate-500">총 SNF 참가 게임</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-xl">📈</span>
+                                <span id="kpi-change-1" class="text-xs text-slate-400">TOP10 평균</span>
+                            </div>
+                            <p id="kpi-value-1" class="text-[32px] font-bold text-slate-800 mb-1">+70.7K</p>
+                            <p id="kpi-label-1" class="text-sm text-slate-500">SNF 기간 찜 수 증가</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-xl">📊</span>
+                                <span id="kpi-change-2" class="text-xs text-slate-400">TOP10 기준</span>
+                            </div>
+                            <p id="kpi-value-2" class="text-[32px] font-bold text-slate-800 mb-1">8.8회</p>
+                            <p id="kpi-label-2" class="text-sm text-slate-500">평균 차트인 횟수</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-xl">👥</span>
+                                <span id="kpi-change-3" class="text-xs text-slate-400">TOP10 중</span>
+                            </div>
+                            <p id="kpi-value-3" class="text-[32px] font-bold text-slate-800 mb-1">80%</p>
+                            <p id="kpi-label-3" class="text-sm text-slate-500">멀티플레이 게임 비율</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Key Insights - Elastic UI 스타일 -->
+                    <div class="mb-8">
+                        <h3 class="section-title flex items-center justify-between">
+                            <span>💡 주요 발견점</span>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-2xl border-l-4 border-[#0047AB] hover:bg-slate-50 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl">🎮</span>
+                                    <div>
+                                        <h4 class="font-semibold text-[#003380] mb-1">체험판이 성공의 열쇠</h4>
+                                        <p class="text-sm text-slate-500">TOP 10 중 50%가 체험판 제공. 유저가 직접 플레이해볼 수 있는 기회가 찜 수 증가에 직결됩니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-4 border-blue-500 hover:bg-slate-50 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl">🌏</span>
+                                    <div>
+                                        <h4 class="font-semibold text-blue-600 mb-1">중국어권이 핵심 시장</h4>
+                                        <p class="text-sm text-slate-500">TOP 게임 리뷰 언어 1위는 간체 중국어. 92%가 중국어 간체를 지원합니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-4 border-violet-500 hover:bg-slate-50 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl">👥</span>
+                                    <div>
+                                        <h4 class="font-semibold text-violet-600 mb-1">멀티플레이가 대세</h4>
+                                        <p class="text-sm text-slate-500">TOP 10 중 80%가 멀티플레이. 협동/경쟁 요소가 SNF에서 강력한 경쟁력입니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-4 border-amber-500 hover:bg-slate-50 transition-all shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-2xl">🇰🇷</span>
+                                    <div>
+                                        <h4 class="font-semibold text-amber-600 mb-1">한국 게임 글로벌 약진</h4>
+                                        <p class="text-sm text-slate-500">NEXON(빈딕투스), Netmarble(나혼자레벨업)이 TOP 10 진입. 글로벌 경쟁력 입증!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- TOP 5 Quick View - Elastic UI 스타일 -->
+                    <div class="mb-8">
+                        <h3 class="section-title flex items-center justify-between">
+                            <span>🏆 TOP 5 게임</span>
+                            <button onclick="showPage('top-games')" class="text-sm px-4 py-2 bg-[#0047AB] hover:bg-[#003380] text-white rounded-xl transition-all flex items-center gap-2 shadow-sm">
+                                자세히 보기 <span>→</span>
+                            </button>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <!-- 1위 -->
+                            <div class="bg-teal-50 p-4 rounded-2xl border-2 border-blue-400 text-center hover:bg-blue-100 transition-all">
+                                <div class="text-3xl font-bold text-[#003380] mb-2">1</div>
+                                <h4 class="font-semibold text-slate-800 text-sm mb-1">빈딕투스: 디파잉 페이트</h4>
+                                <p class="text-xs text-slate-400 mb-2">액션 RPG</p>
+                                <div class="text-lg font-bold text-[#003380]">744K</div>
+                                <div class="text-xs text-slate-400">찜 수</div>
+                            </div>
+                            <!-- 2위 -->
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200 text-center hover:border-blue-400 transition-all shadow-sm">
+                                <div class="text-2xl font-bold text-blue-500 mb-2">2</div>
+                                <h4 class="font-semibold text-slate-800 text-sm mb-1">Jump Ship</h4>
+                                <p class="text-xs text-slate-400 mb-2">슈팅 (1인칭)</p>
+                                <div class="text-lg font-bold text-blue-500">356K</div>
+                                <div class="text-xs text-slate-400">찜 수</div>
+                            </div>
+                            <!-- 3위 -->
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200 text-center hover:border-blue-400 transition-all shadow-sm">
+                                <div class="text-2xl font-bold text-violet-500 mb-2">3</div>
+                                <h4 class="font-semibold text-slate-800 text-sm mb-1">와일드게이트</h4>
+                                <p class="text-xs text-slate-400 mb-2">슈팅 (1인칭)</p>
+                                <div class="text-lg font-bold text-violet-500">298K</div>
+                                <div class="text-xs text-slate-400">찜 수</div>
+                            </div>
+                            <!-- 4위 -->
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200 text-center hover:border-blue-400 transition-all shadow-sm">
+                                <div class="text-2xl font-bold text-pink-500 mb-2">4</div>
+                                <h4 class="font-semibold text-slate-800 text-sm mb-1">MIMESIS</h4>
+                                <p class="text-xs text-slate-400 mb-2">공포</p>
+                                <div class="text-lg font-bold text-pink-500">178K</div>
+                                <div class="text-xs text-slate-400">찜 수</div>
+                            </div>
+                            <!-- 5위 -->
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200 text-center hover:border-blue-400 transition-all shadow-sm">
+                                <div class="text-2xl font-bold text-orange-500 mb-2">5</div>
+                                <h4 class="font-semibold text-slate-800 text-sm mb-1">Dead Rising Deluxe</h4>
+                                <p class="text-xs text-slate-400 mb-2">액션</p>
+                                <div class="text-lg font-bold text-orange-500">156K</div>
+                                <div class="text-xs text-slate-400">찜 수</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 차트 성과 요약 - Elastic UI 스타일 -->
+                    <div class="mb-8">
+                        <h3 class="section-title flex items-center justify-between">
+                            <span>📈 차트 성과 요약</span>
+                            <button onclick="showPage('charts')" class="text-sm px-4 py-2 bg-[#0047AB] hover:bg-[#003380] text-white rounded-xl transition-all flex items-center gap-2 shadow-sm">
+                                자세히 보기 <span>→</span>
+                            </button>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <div class="text-4xl mb-2">📊</div>
+                                <p class="text-[28px] font-bold text-slate-800 mb-1">47개</p>
+                                <p class="text-sm text-slate-500">3종 차트 진입 게임</p>
+                                <p class="text-xs text-[#003380] mt-2">인기 체험판 / 인기 출시 예정 / 떠오르는</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <div class="text-4xl mb-2">👑</div>
+                                <p class="text-2xl font-bold text-slate-800 mb-1">빈딕투스</p>
+                                <p class="text-sm text-slate-500">최다 차트인 게임</p>
+                                <p class="text-xs text-[#003380] mt-2">14회 차트 진입</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <p class="text-[28px] font-bold text-slate-800 mb-1">50%</p>
+                                <p class="text-sm text-slate-500">체험판 제공 비율</p>
+                                <p class="text-xs text-[#003380] mt-2">TOP 10 기준</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 장르 분포 - Elastic UI 스타일 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="section-title flex items-center justify-between">
+                                <span>🎨 장르 분포</span>
+                            </h3>
+                            <div class="space-y-3 mt-4">
+                                <!-- 액션 RPG -->
+                                <div class="genre-bar-item">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-medium text-slate-700">🎮 액션 RPG</span>
+                                        <span class="text-sm font-semibold text-[#003380]">28%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-full bg-[#0047AB] rounded-full transition-all duration-1000" style="width: 28%;"></div>
+                                    </div>
+                                </div>
+                                <!-- 슈팅 -->
+                                <div class="genre-bar-item">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-medium text-slate-700">🔫 슈팅</span>
+                                        <span class="text-sm font-semibold text-blue-600">22%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-full bg-blue-500 rounded-full transition-all duration-1000" style="width: 22%;"></div>
+                                    </div>
+                                </div>
+                                <!-- 로그라이크 -->
+                                <div class="genre-bar-item">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-medium text-slate-700">🎲 로그라이크</span>
+                                        <span class="text-sm font-semibold text-violet-600">18%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-full bg-violet-500 rounded-full transition-all duration-1000" style="width: 18%;"></div>
+                                    </div>
+                                </div>
+                                <!-- 공포 -->
+                                <div class="genre-bar-item">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-medium text-slate-700">👻 공포</span>
+                                        <span class="text-sm font-semibold text-pink-600">15%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-full bg-pink-500 rounded-full transition-all duration-1000" style="width: 15%;"></div>
+                                    </div>
+                                </div>
+                                <!-- 기타 -->
+                                <div class="genre-bar-item">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-medium text-slate-700">📦 기타</span>
+                                        <span class="text-sm font-semibold text-slate-500">17%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-full bg-slate-400 rounded-full transition-all duration-1000" style="width: 17%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="section-title flex items-center justify-between">
+                                <span>📋 SNF 준비 가이드</span>
+                                <button onclick="showPage('report')" class="text-sm px-4 py-2 bg-[#0047AB] hover:bg-[#003380] text-white rounded-xl transition-all flex items-center gap-2 shadow-sm">
+                                    자세히 보기 <span>→</span>
+                                </button>
+                            </h3>
+                            <div class="space-y-3 mt-4">
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xl">🎮</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-base font-semibold text-slate-800">체험판 준비</p>
+                                        <p class="text-sm text-slate-500">TOP 10의 50%가 체험판 제공</p>
+                                    </div>
+                                    <span class="text-emerald-500 text-lg">✓</span>
+                                </div>
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xl">🌍</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-base font-semibold text-slate-800">다국어 지원</p>
+                                        <p class="text-sm text-slate-500">최소 7개 언어, 중국어 간체 필수</p>
+                                    </div>
+                                    <span class="text-emerald-500 text-lg">✓</span>
+                                </div>
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                                    <div class="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xl">💬</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-base font-semibold text-slate-800">커뮤니티 구축</p>
+                                        <p class="text-sm text-slate-500">Discord + YouTube + X 필수</p>
+                                    </div>
+                                    <span class="text-emerald-500 text-lg">✓</span>
+                                </div>
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                                    <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xl">👥</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-base font-semibold text-slate-800">멀티플레이어</p>
+                                        <p class="text-sm text-slate-500">TOP 10의 80%가 멀티 지원</p>
+                                    </div>
+                                    <span class="text-emerald-500 text-lg">✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TOP Games Section -->
+            <section id="top-games" class="page-section">
+                <div class="content-panel p-8">
+                    <h2 class="text-[28px] font-bold mb-4 text-[#1E293B]">🏆 TOP 게임 분석</h2>
+                    <p class="text-[#64748B] mb-8">SNF 기간 중 가장 많이 플레이된 게임들의 종합 성과 분석</p>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-[#FFFFFF] p-5 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-2xl">📈</span>
+                                <span class="text-xs text-[#94A3B8]">TOP 10 합계</span>
+                            </div>
+                            <p class="text-[28px] font-bold text-[#1E293B] mb-1">+70만 찜</p>
+                            <p class="text-sm text-[#64748B]">SNF 기간 총 찜 수 증가</p>
+                        </div>
+                        <div class="bg-[#FFFFFF] p-5 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#10B981] text-2xl">🚀</span>
+                                <span class="text-xs text-[#94A3B8]">1위 게임</span>
+                            </div>
+                            <p class="text-[28px] font-bold text-[#1E293B] mb-1">+15만 찜</p>
+                            <p class="text-sm text-[#64748B]">빈딕투스 (+25.6% 증가)</p>
+                        </div>
+                    </div>
+
+                    <!-- 핵심 성과 요약 -->
+                    <div class="mb-8">
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <h3 class="text-lg font-semibold mb-4 text-[#1E293B] flex items-center gap-2">
+                                <span>📊</span> 핵심 성과 요약
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#0047AB]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">🎮</span>
+                                        <h4 class="font-semibold text-[#0047AB]">체험판이 성공의 열쇠</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">TOP 10 중 5개 게임이 체험판 페이지 접속 가능. 체험판을 제공하면 유저 관심도가 크게 높아집니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#3B82F6]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">👥</span>
+                                        <h4 class="font-semibold text-[#3B82F6]">멀티플레이가 대세</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">TOP 10 중 7개가 멀티플레이 게임. 협동/경쟁 요소가 SNF에서 강력한 경쟁력이 됩니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#F59E0B]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">⭐</span>
+                                        <h4 class="font-semibold text-[#F59E0B]">긍정 리뷰가 증명</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">TOP 10 중 4개가 '긍정적' 이상 리뷰. 품질이 검증된 게임들이 상위권을 차지했습니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#8B5CF6]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">🌏</span>
+                                        <h4 class="font-semibold text-[#8B5CF6]">중국어권이 핵심</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">대부분의 TOP 게임 리뷰 언어 1위가 간체 중국어. 중국 시장 공략이 성공의 필수 요소입니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="flex gap-0 mb-6 border-b border-[#E2E8F0]">
+                        <button onclick="showTopGamesTab('top10')" id="tab-top10" class="top-games-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-[#0047AB] text-[#0047AB]">
+                            <span class="flex items-center gap-2">
+                                <span>🏆</span> TOP 10 종합 평가
+                            </span>
+                        </button>
+                        <button onclick="showTopGamesTab('top50')" id="tab-top50" class="top-games-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-transparent text-[#94A3B8] hover:text-[#1E293B]">
+                            <span class="flex items-center gap-2">
+                                <span>📊</span> TOP 50 플레이 순위
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- TOP 10 Tab Content -->
+                    <div id="tab-content-top10" class="top-games-tab-content">
+                        <div class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#0047AB] mb-6">
+                            <p class="text-sm text-[#64748B]">
+                                <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
+                                SNF 기간 중 실제로 가장 많이 플레이된 게임들입니다. 리뷰 수와 찜 수 증가가 모두 뛰어난 검증된 타이틀들이에요. 
+                                간체 중국어 유저들의 활동이 특히 활발했습니다.
+                            </p>
+                        </div>
+
+                        <!-- Charts for TOP 10 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div>
+                                <h3 class="section-title">찜 수 증가 TOP 5</h3>
+                                <div class="chart-container" style="height: 250px;">
+                                    <canvas id="wishlistTop10Chart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">리뷰 상황 분포</h3>
+                                <div class="chart-container" style="height: 220px;">
+                                    <canvas id="reviewTop10Chart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">장르 분포</h3>
+                                <div class="chart-container" style="height: 220px;">
+                                    <canvas id="genreTop10Chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto mb-8">
+                            <table class="data-table w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">순위</th>
+                                        <th>게임명</th>
+                                        <th>장르</th>
+                                        <th>리뷰 상황</th>
+                                        <th class="text-right">리뷰 수</th>
+                                        <th class="text-right">찜 수 증가</th>
+                                        <th class="text-right">차트인 횟수</th>
+                                        <th class="text-center">스팀DB 찜 랭크</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center font-bold text-[#0047AB]">1</td>
+                                        <td class="font-semibold">빈딕투스: 디파잉 페이트</td>
+                                        <td>액션 RPG</td>
+                                        <td><span class="badge badge-neutral">복합적</span></td>
+                                        <td class="text-right">5,200</td>
+                                        <td class="text-right text-[#0047AB]">+151,605</td>
+                                        <td class="text-right font-semibold">14</td>
+                                        <td class="text-center"><span class="badge badge-positive">31위</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold text-[#94A3B8]">2</td>
+                                        <td class="font-semibold">Jump Ship</td>
+                                        <td>슈팅 (1인칭)</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">1,811</td>
+                                        <td class="text-right text-[#0047AB]">+59,726</td>
+                                        <td class="text-right font-semibold">9</td>
+                                        <td class="text-center">96위</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold text-[#3B82F6]">3</td>
+                                        <td class="font-semibold">와일드게이트</td>
+                                        <td>슈팅 (1인칭)</td>
+                                        <td><span class="badge badge-positive">매우 긍정적</span></td>
+                                        <td class="text-right">3,297</td>
+                                        <td class="text-right text-[#0047AB]">+89,715</td>
+                                        <td class="text-right font-semibold">15</td>
+                                        <td class="text-center"><span class="badge badge-positive">18위</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">4</td>
+                                        <td class="font-semibold">MIMESIS</td>
+                                        <td>공포</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">-</td>
+                                        <td class="text-right text-[#0047AB]">+53,825</td>
+                                        <td class="text-right font-semibold">6</td>
+                                        <td class="text-center">211위</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">5</td>
+                                        <td class="font-semibold">Dead Rising Deluxe Remaster</td>
+                                        <td>액션</td>
+                                        <td><span class="badge badge-positive">압도적 긍정</span></td>
+                                        <td class="text-right">2,207</td>
+                                        <td class="text-right text-[#0047AB]">+71,933</td>
+                                        <td class="text-right font-semibold">9</td>
+                                        <td class="text-center">109위</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">6</td>
+                                        <td class="font-semibold">나 혼자만 레벨업: Arise</td>
+                                        <td>액션 RPG</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">-</td>
+                                        <td class="text-right text-[#0047AB]">+72,929</td>
+                                        <td class="text-right font-semibold">12</td>
+                                        <td class="text-center"><span class="badge badge-positive">43위</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">7</td>
+                                        <td class="font-semibold">PIONER</td>
+                                        <td>MMORPG</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">336</td>
+                                        <td class="text-right text-[#0047AB]">+82,890</td>
+                                        <td class="text-right font-semibold">5</td>
+                                        <td class="text-center">90위</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">8</td>
+                                        <td class="font-semibold">Zoochosis</td>
+                                        <td>공포</td>
+                                        <td><span class="badge badge-positive">압도적 긍정</span></td>
+                                        <td class="text-right">1,197</td>
+                                        <td class="text-right text-[#0047AB]">+90,281</td>
+                                        <td class="text-right font-semibold">12</td>
+                                        <td class="text-center"><span class="badge badge-positive">60위</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">9</td>
+                                        <td class="font-semibold">UFL</td>
+                                        <td>스포츠 (축구)</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">-</td>
+                                        <td class="text-right text-[#0047AB]">+20,482</td>
+                                        <td class="text-right font-semibold">5</td>
+                                        <td class="text-center">203위</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center font-bold">10</td>
+                                        <td class="font-semibold">Starlight Re:Volver</td>
+                                        <td>로그라이크</td>
+                                        <td><span class="badge badge-neutral">확인불가</span></td>
+                                        <td class="text-right">-</td>
+                                        <td class="text-right text-[#0047AB]">+13,209</td>
+                                        <td class="text-right font-semibold">1</td>
+                                        <td class="text-center">286위</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TOP 50 Tab Content -->
+                    <div id="tab-content-top50" class="top-games-tab-content" style="display:none;">
+                        <div class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#3B82F6] mb-6">
+                            <p class="text-sm text-[#64748B]">
+                                <strong class="text-[#3B82F6]">💡 이 차트의 특징:</strong> 
+                                TOP 50까지 확장하면 다양한 인디 게임들도 포함됩니다. 로그라이크 장르가 압도적으로 많고, 
+                                멀티플레이 게임이 싱글플레이보다 약간 더 많습니다. 체험판 제공 여부가 성공에 큰 영향을 미쳤어요.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🎮</span>
+                                    <h4 class="font-semibold text-[#0047AB]">체험판 접속 가능</h4>
+                                </div>
+                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">29개</p>
+                                <p class="text-sm text-[#64748B]">TOP 50 중 58%</p>
+                            </div>
+                            <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">👥</span>
+                                    <h4 class="font-semibold text-[#3B82F6]">멀티플레이</h4>
+                                </div>
+                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">27개</p>
+                                <p class="text-sm text-[#64748B]">54% (싱글 23개)</p>
+                            </div>
+                            <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🎯</span>
+                                    <h4 class="font-semibold text-[#8B5CF6]">최다 장르</h4>
+                                </div>
+                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">로그라이크</p>
+                                <p class="text-sm text-[#64748B]">14개 게임 (28%)</p>
+                            </div>
+                        </div>
+
+                        <!-- Charts for TOP 50 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div>
+                                <h3 class="section-title">장르 분포 (TOP 50)</h3>
+                                <div class="chart-container" style="height: 220px;">
+                                    <canvas id="genreTop50Chart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">멀티 vs 싱글</h3>
+                                <div class="chart-container" style="height: 220px;">
+                                    <canvas id="multiplayerChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">체험판 제공 여부</h3>
+                                <div class="chart-container" style="height: 220px;">
+                                    <canvas id="demoAvailChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto mb-8">
+                            <table class="data-table w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">순위</th>
+                                        <th>게임명</th>
+                                        <th>장르</th>
+                                        <th class="text-center">체험판</th>
+                                        <th class="text-center">플레이 유형</th>
+                                        <th>출시일</th>
+                                        <th class="text-center">차트인</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="text-center font-bold text-[#0047AB]">1</td><td class="font-semibold">빈딕투스: 디파잉 페이트</td><td>액션 RPG</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center font-semibold">14</td></tr>
+                                    <tr><td class="text-center font-bold text-[#94A3B8]">2</td><td class="font-semibold">Jump Ship</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025.07.23</td><td class="text-center font-semibold">9</td></tr>
+                                    <tr><td class="text-center font-bold text-[#3B82F6]">3</td><td class="font-semibold">와일드게이트</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center font-semibold">15</td></tr>
+                                    <tr><td class="text-center">4</td><td>MIMESIS</td><td>공포</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년 3분기</td><td class="text-center">6</td></tr>
+                                    <tr><td class="text-center">5</td><td>Dead Rising Deluxe Remaster</td><td>액션</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>출시예정</td><td class="text-center">9</td></tr>
+                                    <tr><td class="text-center">6</td><td>나 혼자만 레벨업: Arise</td><td>액션 RPG</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center">12</td></tr>
+                                    <tr><td class="text-center">7</td><td>PIONER</td><td>MMORPG</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center">5</td></tr>
+                                    <tr><td class="text-center">8</td><td>Zoochosis</td><td>공포</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년 3분기</td><td class="text-center">12</td></tr>
+                                    <tr><td class="text-center">9</td><td>UFL</td><td>스포츠 (축구)</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center">5</td></tr>
+                                    <tr><td class="text-center">10</td><td>Starlight Re:Volver</td><td>로그라이크</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년 3분기</td><td class="text-center">1</td></tr>
+                                    <tr><td class="text-center text-[#94A3B8]">11</td><td>Gray Zone Warfare</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">-</td></tr>
+                                    <tr><td class="text-center text-[#94A3B8]">12</td><td>Cat Quest III</td><td>로그라이크</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>출시예정</td><td class="text-center">-</td></tr>
+                                    <tr><td class="text-center text-[#94A3B8]">13</td><td>Stellar Nomad</td><td>건설 (우주)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">-</td></tr>
+                                    <tr><td class="text-center text-[#94A3B8]">14</td><td>Anvil Empires</td><td>전략</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center">7</td></tr>
+                                    <tr><td class="text-center text-[#94A3B8]">15</td><td>Wheel World</td><td>액션 어드벤처</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">9</td></tr>
+                                    <tr><td colspan="7" class="text-center text-[#94A3B8] text-sm py-2">... 16~50위 게임 생략 (총 50개 게임 데이터 보유) ...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section id="charts" class="page-section">
+                <div class="content-panel p-8">
+                    <h2 class="text-[28px] font-bold mb-6 text-[#1E293B] flex items-center gap-3">
+                        <span>📊</span> 차트 성과 분석
+                    </h2>
+                    <p class="text-[#64748B] mb-8">SNF 기간 동안 3종 차트(인기 출시 예정, 떠오르는 출시 예정, 인기 체험판) 차트인 횟수 분석</p>
+
+                    <!-- KPI Cards with improved design -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0] hover:border-[#0047AB] transition-all">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <p class="text-[#0047AB] text-xs font-semibold uppercase tracking-wider mb-2">Total Entries</p>
+                                    <p class="text-[#64748B] text-sm font-medium mb-1">3종 차트 진입 게임 수</p>
+                                </div>
+                                <div class="text-5xl opacity-20">🎮</div>
+                            </div>
+                            <div class="flex items-baseline gap-2 mb-3">
+                                <p class="text-5xl font-bold text-[#1E293B] counter">47</p>
+                                <p class="text-[#0047AB] text-lg">개</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] rounded">인기 체험판</span>
+                                <span class="text-xs px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] rounded">인기 출시 예정</span>
+                                <span class="text-xs px-2 py-1 bg-[#3B82F6]/20 text-[#3B82F6] rounded">떠오르는 출시 예정</span>
+                            </div>
+                        </div>
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0] hover:border-[#0047AB] transition-all">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <p class="text-[#0047AB] text-xs font-semibold uppercase tracking-wider mb-2">Champion</p>
+                                    <p class="text-[#64748B] text-sm font-medium mb-1">최다 차트인 게임</p>
+                                </div>
+                                <div class="text-5xl opacity-20">👑</div>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-2xl font-bold text-[#1E293B] mb-1">빈딕투스: 디파잉 페이트</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#0047AB] text-3xl font-bold">14회</span>
+                                    <span class="text-[#64748B] text-sm">차트 진입</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-[#94A3B8]">5일간 TOP 10 내 14회 진입 달성</p>
+                        </div>
+                    </div>
+
+                    <!-- 핵심 데이터 분석 -->
+                    <div class="mb-8">
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <h3 class="text-lg font-bold mb-4 text-[#1E293B] flex items-center gap-2">
+                                <span>📊</span> 2025년 6월 SNF 핵심 성과 요약
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">🎯</span>
+                                        <h4 class="font-bold text-[#0047AB]">상위 3개 게임이 주도</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">빈딕투스, 나혼자레벨업, Jump Ship 3개 게임이 전체 차트 노출의 25%를 차지했습니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">🔥</span>
+                                        <h4 class="font-bold text-[#0047AB]">체험판이 가장 효과적</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">인기 체험판 차트가 전체 노출의 40%를 차지해, 가장 효과적인 홍보 채널로 확인됐습니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">👑</span>
+                                        <h4 class="font-bold text-[#0047AB]">10회 이상 진입 = 성공</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">10회 이상 차트에 오른 게임은 4개뿐입니다. 이 기준을 달성하면 '성공적인 SNF'라고 볼 수 있습니다.</p>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xl">🚀</span>
+                                        <h4 class="font-bold text-[#3B82F6]">3종 차트 동시 공략이 핵심</h4>
+                                    </div>
+                                    <p class="text-sm text-[#64748B] leading-relaxed">세 종류의 차트에 모두 진입한 게임들이 평균 10회 이상 노출되며 높은 성과를 기록했습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row - 3개 차트 가로 배치 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+                        <!-- Chart Type Distribution -->
+                        <div class="chart-card">
+                            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                                <span>📊</span> 차트 종류별 분포
+                            </h3>
+                            <div style="height: 220px; display: flex; align-items: center; justify-content: center;">
+                                <canvas id="chartTypeDistribution"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Top Games by Chart Count -->
+                        <div class="chart-card">
+                            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                                <span>🏆</span> 차트인 횟수 TOP 10
+                            </h3>
+                            <div style="height: 220px;">
+                                <canvas id="topChartGames"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Daily Chart Activity -->
+                        <div class="chart-card">
+                            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                                <span>📈</span> 일자별 차트 활동
+                            </h3>
+                            <div style="height: 220px;">
+                                <canvas id="dailyChartActivity"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3종 차트별 세부 분석 - 탭 UI -->
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold mb-4 text-[#1E293B] flex items-center gap-3">
+                            <span>🔥</span> 3종 차트별 상세 분석
+                        </div>
+                        
+                        <!-- 2026 전략 권장사항 -->
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0] mb-6">
+                            <h4 class="text-xl font-bold mb-4 text-[#1E293B] flex items-center gap-2">
+                                <span>🎯</span> 2026년 2월 SNF, 어떻게 준비할까?
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h5 class="font-bold text-[#0047AB] mb-2">🔥 인기 체험판 노리기</h5>
+                                    <ul class="text-sm text-[#64748B] space-y-1">
+                                        <li>• 가장 안정적인 노출 채널</li>
+                                        <li>• 완성도 높은 체험판이 필수</li>
+                                        <li>• 5일 연속 TOP 10 유지가 목표</li>
+                                        <li>• 멀티플레이 요소가 있으면 유리</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h5 class="font-bold text-[#0047AB] mb-2">⭐ 인기 출시 예정 도전</h5>
+                                    <ul class="text-sm text-[#64748B] space-y-1">
+                                        <li>• 대형 타이틀과 경쟁해야 함</li>
+                                        <li>• SNF 전 사전 마케팅 중요</li>
+                                        <li>• 찜 목록 추가를 적극 유도</li>
+                                        <li>• 게임 미디어 커버리지 확보</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h5 class="font-bold text-[#3B82F6] mb-2">🚀 떠오르는 게임 진입</h5>
+                                    <ul class="text-sm text-[#64748B] space-y-1">
+                                        <li>• 입소문 마케팅이 효과적</li>
+                                        <li>• 차별화된 컨셉으로 승부</li>
+                                        <li>• 인디 게임에게 기회가 많음</li>
+                                        <li>• 커뮤니티 반응에 빠르게 대응</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs Navigation -->
+                        <div class="flex gap-0 mb-6 border-b border-[#E2E8F0]">
+                            <button onclick="showChartTab('demo')" id="tab-demo" class="chart-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-[#0047AB] text-[#0047AB]">
+                                <span class="flex items-center gap-2">
+                                    <span>🎮</span> 인기 체험판
+                                </span>
+                            </button>
+                            <button onclick="showChartTab('popular')" id="tab-popular" class="chart-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-transparent text-[#94A3B8] hover:text-[#1E293B]">
+                                <span class="flex items-center gap-2">
+                                    <span>⭐</span> 인기 출시 예정
+                                </span>
+                            </button>
+                            <button onclick="showChartTab('trending')" id="tab-trending" class="chart-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-transparent text-[#94A3B8] hover:text-[#1E293B]">
+                                <span class="flex items-center gap-2">
+                                    <span>🚀</span> 떠오르는 출시 예정
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div id="tab-content-demo" class="tab-content">
+                        <!-- 인기 체험판 -->
+                        <div class="data-table">
+                            <div class="insight-box mb-6">
+                                <p class="text-sm text-[#64748B]">
+                                    <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
+                                    체험판 차트는 가장 안정적입니다. 상위권 게임들이 5일 내내 꾸준히 순위를 유지했어요. 
+                                    빈딕투스와 나혼자레벨업 같은 한국 게임이 강세를 보였고, 중국 퍼블리셔 bilibili도 적극 참여했습니다.
+                                </p>
+                            </div>
+                            <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
+                                <!-- 통합 헤더 -->
+                                <div class="bg-[#F1F5F9] px-5 py-4 border-b border-[#E2E8F0]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">🎮</span>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-[#1E293B]">
+                                                    인기 체험판 <span class="text-sm font-normal text-[#0047AB] ml-1">Most Played Demos</span>
+                                                </h4>
+                                                <p class="text-xs text-[#94A3B8]">SNF 기간 가장 많이 플레이된 체험판 TOP 10</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-[#0047AB]/20 px-3 py-1.5 rounded">
+                                            <span class="text-[#0047AB] font-bold">5일</span>
+                                            <span class="text-xs text-[#94A3B8]">추적</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>게임명</th>
+                                            <th>개발사</th>
+                                            <th>배급사</th>
+                                            <th class="text-center">등장 횟수</th>
+                                            <th class="text-center">최고 순위</th>
+                                            <th class="text-center">5일 연속</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-semibold">빈딕투스: 디파잉 페이트</td>
+                                            <td class="text-sm">NEXON</td>
+                                            <td class="text-sm">NEXON</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center text-[#0047AB]">1위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">PIONER</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center">2위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Escape from Duckov</td>
+                                            <td class="text-sm">Team Soda</td>
+                                            <td class="text-sm">bilibili</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center">3위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">나 혼자만 레벨업</td>
+                                            <td class="text-sm">Netmarble Neo</td>
+                                            <td class="text-sm">Netmarble</td>
+                                            <td class="text-center font-bold text-[#0047AB]">2</td>
+                                            <td class="text-center">8위</td>
+                                            <td class="text-center"><span class="badge badge-neutral">-</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">MIMESIS</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center">4위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+
+                        <!-- Tab Content: 인기 출시 예정 -->
+                        <div id="tab-content-popular" class="tab-content" style="display:none;">
+                        <div class="data-table">
+                            <div class="insight-box mb-6">
+                                <p class="text-sm text-[#64748B]">
+                                    <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
+                                    대형 타이틀들의 격전지입니다. 빈딕투스와 나혼자레벨업이 1~2위를 두고 치열하게 경쟁했어요. 
+                                    Nacon 같은 서양 퍼블리셔와 한국 퍼블리셔가 맞붙는 흥미로운 구도가 펼쳐졌습니다.
+                                </p>
+                            </div>
+                            <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
+                                <!-- 통합 헤더 -->
+                                <div class="bg-[#F1F5F9] px-5 py-4 border-b border-[#E2E8F0]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">🚀</span>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-[#1E293B]">
+                                                    인기 출시 예정 <span class="text-sm font-normal text-[#0047AB] ml-1">Popular Upcoming</span>
+                                                </h4>
+                                                <p class="text-xs text-[#94A3B8]">찜 수 기반 가장 기대되는 게임 TOP 10</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-[#0047AB]/20 px-3 py-1.5 rounded">
+                                            <span class="text-[#0047AB] font-bold">5일</span>
+                                            <span class="text-xs text-[#94A3B8]">추적</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>게임명</th>
+                                            <th>개발사</th>
+                                            <th>배급사</th>
+                                            <th class="text-center">등장 횟수</th>
+                                            <th class="text-center">최고 순위</th>
+                                            <th class="text-center">5일 연속</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-semibold">빈딕투스: 디파잉 페이트</td>
+                                            <td class="text-sm">NEXON</td>
+                                            <td class="text-sm">NEXON</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center text-[#0047AB]">1위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">나 혼자만 레벨업</td>
+                                            <td class="text-sm">Netmarble Neo</td>
+                                            <td class="text-sm">Netmarble</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center text-[#0047AB]">1~2위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Hell is Us</td>
+                                            <td class="text-sm">Nacon</td>
+                                            <td class="text-sm">Nacon</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center">3위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Dead Rising</td>
+                                            <td class="text-sm">Ramjet Studios</td>
+                                            <td class="text-sm">Ramjet Studios</td>
+                                            <td class="text-center font-bold text-[#0047AB]">4</td>
+                                            <td class="text-center">4위</td>
+                                            <td class="text-center"><span class="badge badge-neutral">-</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">PIONER</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center">3~5위</td>
+                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+
+                        <!-- Tab Content: 떠오르는 출시 예정 -->
+                        <div id="tab-content-trending" class="tab-content" style="display:none;">
+                        <div class="data-table">
+                            <div class="insight-box mb-6">
+                                <p class="text-sm text-[#64748B]">
+                                    <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
+                                    가장 변화가 빠른 차트입니다. 매일 1위가 바뀔 정도로 역동적이에요. 
+                                    Moonlighter 2처럼 인디 게임도 1위에 오를 수 있어서, 바이럴 마케팅의 효과가 가장 큰 차트입니다.
+                                </p>
+                            </div>
+                            <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
+                                <!-- 통합 헤더 -->
+                                <div class="bg-[#F1F5F9] px-5 py-4 border-b border-[#E2E8F0]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">🔥</span>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-[#1E293B]">
+                                                    떠오르는 출시 예정 <span class="text-sm font-normal text-[#0047AB] ml-1">Trending Upcoming</span>
+                                                </h4>
+                                                <p class="text-xs text-[#94A3B8]">급상승 중인 관심 게임 · 변동성 가장 높은 차트</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-[#0047AB]/20 px-3 py-1.5 rounded">
+                                            <span class="text-[#0047AB] font-bold">🔄</span>
+                                            <span class="text-xs text-[#94A3B8]">매일 변동</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>게임명</th>
+                                            <th>개발사</th>
+                                            <th>배급사</th>
+                                            <th class="text-center">등장 횟수</th>
+                                            <th class="text-center">최고 순위</th>
+                                            <th class="text-center">특징</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-semibold">Moonlighter 2</td>
+                                            <td class="text-sm">Digital Sun</td>
+                                            <td class="text-sm">11 bit studios</td>
+                                            <td class="text-center font-bold text-[#0047AB]">5</td>
+                                            <td class="text-center text-[#0047AB]">1위</td>
+                                            <td class="text-center"><span class="badge badge-positive">안정</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">나 혼자만 레벨업</td>
+                                            <td class="text-sm">Netmarble Neo</td>
+                                            <td class="text-sm">Netmarble</td>
+                                            <td class="text-center font-bold text-[#0047AB]">4</td>
+                                            <td class="text-center text-[#0047AB]">1위</td>
+                                            <td class="text-center"><span class="badge badge-positive">상승</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">PIONER</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-sm">GFAGAMES</td>
+                                            <td class="text-center font-bold text-[#0047AB]">4</td>
+                                            <td class="text-center">3위</td>
+                                            <td class="text-center"><span class="badge badge-positive">안정</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Jump Ship</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-center font-bold text-[#0047AB]">4</td>
+                                            <td class="text-center text-[#0047AB]">1위</td>
+                                            <td class="text-center"><span class="badge badge-neutral">변동</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Date Everything</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-sm">Unknown</td>
+                                            <td class="text-center font-bold text-[#0047AB]">2</td>
+                                            <td class="text-center">2~3위</td>
+                                            <td class="text-center"><span class="badge badge-neutral">급상승</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SNF Report Section -->
+            <section id="report" class="page-section">
+                <div class="content-panel p-8">
+                    <h2 class="text-3xl font-bold mb-3 text-[#1E293B] flex items-center gap-3">
+                        <span>📋</span> 2025년 6월 SNF 결산 리포트
+                    </h2>
+                    <p class="text-[#94A3B8] mb-8">2026년 2월 SNF를 위한 완벽 준비 가이드</p>
+
+                    <!-- 2026 Success Checklist - 최상단 배치 -->
+                    <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0] mb-8">
+                        <h3 class="text-2xl font-bold mb-3 text-[#1E293B] flex items-center gap-2">
+                            <span>🎯</span> 2026년 2월 SNF 성공 체크리스트
+                        </h3>
+                        <p class="text-sm text-[#64748B] mb-6">이 조건들을 충족하면 SNF 성공 확률이 크게 높아집니다</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">체험판 준비</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• 완성도 높은 체험판 필수</li>
+                                    <li>• 30분 내 핵심 재미 전달</li>
+                                    <li>• 피드백 수집 채널 운영</li>
+                                    <li>• <span class="text-[#0047AB]">TOP 10의 50%가 제공</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">다국어 지원</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• 최소 7개 언어 (평균 수준)</li>
+                                    <li>• 중국어 간체 <span class="text-[#0047AB]">필수</span> (92%)</li>
+                                    <li>• 한국어 권장 (70%)</li>
+                                    <li>• 일본어 고려 (68%)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">커뮤니티 구축</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• Discord <span class="text-[#0047AB]">필수</span> (90% 운영)</li>
+                                    <li>• YouTube 채널 (85%)</li>
+                                    <li>• X(Twitter) 계정 (80%)</li>
+                                    <li>• 주 2회 이상 업데이트</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">태그 전략</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• Action 태그 권장 (90%)</li>
+                                    <li>• 평균 18개 태그 활용</li>
+                                    <li>• Multiplayer 효과적 (54%)</li>
+                                    <li>• 장르별 필수 태그 확인</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">활발한 업데이트</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• SNF 전 패치노트 공개</li>
+                                    <li>• Dev Log 정기 업로드</li>
+                                    <li>• 빠른 버그 핫픽스</li>
+                                    <li>• 커뮤니티 소통 활발</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-[#F8FAFC] p-5 rounded-xl border border-[#E2E8F0]">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-2xl">✅</span>
+                                    <h4 class="font-bold text-[#0047AB]">멀티플레이 고려</h4>
+                                </div>
+                                <ul class="text-sm text-[#64748B] space-y-1.5">
+                                    <li>• TOP 10의 70%가 멀티</li>
+                                    <li>• Co-op 모드 바이럴 효과</li>
+                                    <li>• 친구 초대 시스템</li>
+                                    <li>• 싱글도 리더보드 고려</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-3xl">🎮</span>
+                                <span class="text-xs text-[#94A3B8]">2025년 6월</span>
+                            </div>
+                            <p class="text-3xl font-bold text-[#1E293B] mb-1">2,600개</p>
+                            <p class="text-sm text-[#64748B]">참가 게임 수</p>
+                            <p class="text-xs text-[#0047AB] mt-1">▲ +16% (전년 대비)</p>
+                        </div>
+                        
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-3xl">🏷️</span>
+                                <span class="text-xs text-[#94A3B8]">평균</span>
+                            </div>
+                            <p class="text-3xl font-bold text-[#1E293B] mb-1">18개</p>
+                            <p class="text-sm text-[#64748B]">게임당 태그 수</p>
+                            <p class="text-xs text-[#0047AB] mt-1">TOP 10 기준</p>
+                        </div>
+                        
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-3xl">🌍</span>
+                                <span class="text-xs text-[#94A3B8]">인터페이스</span>
+                            </div>
+                            <p class="text-3xl font-bold text-[#1E293B] mb-1">7.8개</p>
+                            <p class="text-sm text-[#64748B]">평균 언어 지원</p>
+                            <p class="text-xs text-[#0047AB] mt-1">자막은 평균 8.2개</p>
+                        </div>
+                        
+                        <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0]">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[#0047AB] text-3xl">📣</span>
+                                <span class="text-xs text-[#94A3B8]">평균</span>
+                            </div>
+                            <p class="text-3xl font-bold text-[#1E293B] mb-1">4.2개</p>
+                            <p class="text-sm text-[#64748B]">커뮤니티 채널 수</p>
+                            <p class="text-xs text-[#0047AB] mt-1">Discord/YouTube/X 필수</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="flex gap-2 mb-6 border-b border-[#E2E8F0]">
+                        <button onclick="showReportTab('tags')" id="tab-tags" class="report-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-[#0047AB] text-[#0047AB]">
+                            <span class="flex items-center gap-2">
+                                <span>🏷️</span> 태그 분석
+                            </span>
+                        </button>
+                        <button onclick="showReportTab('languages')" id="tab-languages" class="report-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-transparent text-[#94A3B8] hover:text-[#1E293B]">
+                            <span class="flex items-center gap-2">
+                                <span>🌍</span> 언어 지원
+                            </span>
+                        </button>
+                        <button onclick="showReportTab('community')" id="tab-community" class="report-tab-btn px-6 py-3 font-semibold transition-all border-b-2 border-transparent text-[#94A3B8] hover:text-[#1E293B]">
+                            <span class="flex items-center gap-2">
+                                <span>📣</span> 커뮤니티
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Tags Tab -->
+                    <div id="tab-content-tags" class="report-tab-content">
+                        <div class="insight-box mb-6">
+                            <p class="text-sm text-[#64748B]">
+                                <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
+                                TOP 10 게임의 90%가 "Action" 태그를 사용하고 있습니다. 평균 18개의 태그를 활용하며, 
+                                Multiplayer, Singleplayer, RPG 태그가 가장 빈번하게 등장했습니다.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <!-- TOP 20 인기 태그 -->
+                            <div>
+                                <h3 class="section-title">TOP 20 인기 태그</h3>
+                                <div class="chart-container" style="height: 280px;">
+                                    <canvas id="tagsChart"></canvas>
+                                </div>
+                            </div>
+                            <!-- 태그 카테고리 분포 -->
+                            <div>
+                                <h3 class="section-title">태그 카테고리 분포</h3>
+                                <div class="chart-container" style="height: 280px;">
+                                    <canvas id="tagCategoryChart"></canvas>
+                                </div>
+                            </div>
+                            <!-- 장르별 필수 태그 추천 -->
+                            <div>
+                                <h3 class="section-title">🎯 장르별 필수 태그</h3>
+                                <div class="space-y-3">
+                                    <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-lg">⚔️</span>
+                                            <p class="font-bold text-[#0047AB]">액션/RPG</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Action</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">RPG</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Combat</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Story Rich</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-lg">🔫</span>
+                                            <p class="font-bold text-[#0047AB]">슈팅</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">FPS</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Shooter</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Multiplayer</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">PvP</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-lg">🎲</span>
+                                            <p class="font-bold text-[#0047AB]">로그라이크</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Roguelike</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Procedural</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/20 text-[#0047AB] text-xs rounded">Difficult</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Languages Tab -->
+                    <div id="tab-content-languages" class="report-tab-content" style="display:none;">
+                        <div class="insight-box mb-6">
+                            <p class="text-sm text-[#64748B]">
+                                <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
+                                영어는 100% 필수이며, 중국어 간체 지원률이 92%로 압도적입니다. 
+                                음성 지원은 42%만 제공하지만, 인터페이스와 자막은 평균 7~8개 언어를 지원합니다.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div>
+                                <h3 class="section-title">음성 지원 TOP 5</h3>
+                                <div class="chart-container" style="height: 240px;">
+                                    <canvas id="voiceChart"></canvas>
+                                </div>
+                                <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
+                                    <p class="text-xs text-[#0047AB] font-medium">TOP 10 중 <span class="text-[#0047AB] font-bold">42%</span>만 음성 제공</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">인터페이스 언어 TOP 7</h3>
+                                <div class="chart-container" style="height: 240px;">
+                                    <canvas id="interfaceChart"></canvas>
+                                </div>
+                                <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
+                                    <p class="text-xs text-[#0047AB] font-medium">평균 <span class="text-[#0047AB] font-bold">7.8개</span> 언어</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">자막 언어 TOP 7</h3>
+                                <div class="chart-container" style="height: 240px;">
+                                    <canvas id="subtitleChart"></canvas>
+                                </div>
+                                <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
+                                    <p class="text-xs text-[#0047AB] font-medium">평균 <span class="text-[#0047AB] font-bold">8.2개</span> 언어</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-[#0047AB]/10 p-6 rounded-xl border border-[#E2E8F0]">
+                                <h4 class="font-bold text-[#0047AB] mb-3">✅ 필수 언어 5종</h4>
+                                <ul class="space-y-2 text-sm text-[#64748B]">
+                                    <li>• <span class="font-semibold text-[#1E293B]">영어</span> - 100% (글로벌 기본)</li>
+                                    <li>• <span class="font-semibold text-[#1E293B]">중국어 간체</span> - 92% (최대 시장)</li>
+                                    <li>• <span class="font-semibold text-[#1E293B]">한국어</span> - 70% (아시아 주요)</li>
+                                    <li>• <span class="font-semibold text-[#1E293B]">일본어</span> - 68% (AAA 필수)</li>
+                                    <li>• <span class="font-semibold text-[#1E293B]">중국어 번체</span> - 54% (대만/홍콩)</li>
+                                </ul>
+                            </div>
+                            <div class="bg-[#0047AB]/10 p-6 rounded-xl border border-[#E2E8F0]">
+                                <h4 class="font-bold text-[#0047AB] mb-3">💡 전략 포인트</h4>
+                                <ul class="space-y-2 text-sm text-[#64748B]">
+                                    <li>• 인디 게임: 최소 영어+중국어+한국어 (3개)</li>
+                                    <li>• AA급: 위 3개 + 일본어, 러시아어 추가 (5개)</li>
+                                    <li>• AAA급: 10개 이상 다국어 필수</li>
+                                    <li>• 유럽 공략 시: 스페인어, 프랑스어, 독일어</li>
+                                    <li>• 남미 공략 시: 포르투갈어(브라질) 필수</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community Tab -->
+                    <div id="tab-content-community" class="report-tab-content" style="display:none;">
+                        <div class="insight-box mb-6">
+                            <p class="text-sm text-[#64748B]">
+                                <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
+                                TOP 게임들은 평균 4.2개의 커뮤니티 채널을 운영합니다. Discord(90%), YouTube(85%), X(80%)가 
+                                필수 3종 세트이며, 주 2회 이상 업데이트하는 게임이 차트 상위권을 차지했습니다.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div>
+                                <h3 class="section-title">커뮤니티 채널 운영률</h3>
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="communityChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="section-title">지역별 플랫폼 선호도</h3>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl space-y-3">
+                                    <!-- 북미/유럽 -->
+                                    <div class="flex items-center gap-3 p-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 min-w-[120px]">
+                                            <span class="text-lg">🌎</span>
+                                            <span class="font-bold text-[#0047AB] text-sm">북미 & 유럽</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">Discord</span>
+                                            <span class="px-2 py-1 bg-[#003380]/30 text-[#0047AB] text-xs rounded">Reddit</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">X</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">YouTube</span>
+                                        </div>
+                                    </div>
+                                    <!-- 동아시아 -->
+                                    <div class="flex items-center gap-3 p-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 min-w-[120px]">
+                                            <span class="text-lg">🌏</span>
+                                            <span class="font-bold text-[#0047AB] text-sm">동아시아</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">Discord</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">bilibili</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">微博</span>
+                                            <span class="px-2 py-1 bg-[#003380]/30 text-[#0047AB] text-xs rounded">TikTok</span>
+                                        </div>
+                                    </div>
+                                    <!-- 한국 -->
+                                    <div class="flex items-center gap-3 p-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 min-w-[120px]">
+                                            <span class="text-lg">🇰🇷</span>
+                                            <span class="font-bold text-[#0047AB] text-sm">대한민국</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">Discord</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">YouTube</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">네이버</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">인벤</span>
+                                        </div>
+                                    </div>
+                                    <!-- 일본 -->
+                                    <div class="flex items-center gap-3 p-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0]">
+                                        <div class="flex items-center gap-2 min-w-[120px]">
+                                            <span class="text-lg">🇯🇵</span>
+                                            <span class="font-bold text-[#0047AB] text-sm">일본</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">Discord</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">YouTube</span>
+                                            <span class="px-2 py-1 bg-[#0047AB]/30 text-[#0047AB] text-xs rounded">X</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#0047AB]/10 p-6 rounded-xl border border-[#E2E8F0]">
+                            <h4 class="font-bold text-[#0047AB] mb-6 flex items-center gap-2">
+                                <span class="text-2xl">📅</span> SNF 전후 커뮤니티 운영 타임라인
+                            </h4>
+                            
+                            <!-- Timeline Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- 3개월 전 -->
+                                <div class="relative">
+                                    <div class="bg-[#FFFFFF] p-5 rounded-xl border-2 border-[#0047AB]/40 hover:border-[#0047AB]/60 transition-all ">
+                                        <div class="flex items-center gap-2 mb-4">
+                                            <span class="text-3xl">📌</span>
+                                            <div>
+                                                <p class="font-bold text-[#1E293B] text-lg">준비 단계</p>
+                                                <p class="text-xs text-[#0047AB]">SNF 3개월 전</p>
+                                            </div>
+                                        </div>
+                                        <ul class="space-y-2.5 text-sm text-[#64748B]">
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">✓</span>
+                                                <span>Discord 서버 오픈</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">✓</span>
+                                                <span>YouTube 채널 생성</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">✓</span>
+                                                <span>X 계정 활동 시작</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">✓</span>
+                                                <span>Dev Log 시작 (주 1회)</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- 기간 중 -->
+                                <div class="relative">
+                                    <div class="bg-[#FFFFFF] p-5 rounded-xl border-2 border-[#0047AB]/40 hover:border-[#0047AB]/60 transition-all ">
+                                        <div class="flex items-center gap-2 mb-4">
+                                            <span class="text-3xl">🎮</span>
+                                            <div>
+                                                <p class="font-bold text-[#1E293B] text-lg">실행 단계</p>
+                                                <p class="text-xs text-[#0047AB]">SNF 기간 중 (7일)</p>
+                                            </div>
+                                        </div>
+                                        <ul class="space-y-2.5 text-sm text-[#64748B]">
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">🔥</span>
+                                                <span>실시간 Q&A 스트리밍</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">🔥</span>
+                                                <span>핫픽스 즉시 공지</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">🔥</span>
+                                                <span>피드백 적극 수집</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">🔥</span>
+                                                <span>매일 커뮤니티 확인</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- 종료 후 -->
+                                <div class="relative">
+                                    <div class="bg-[#FFFFFF] p-5 rounded-xl border-2 border-[#0047AB]/40 hover:border-[#0047AB]/60 transition-all ">
+                                        <div class="flex items-center gap-2 mb-4">
+                                            <span class="text-3xl">📊</span>
+                                            <div>
+                                                <p class="font-bold text-[#1E293B] text-lg">정리 단계</p>
+                                                <p class="text-xs text-[#0047AB]">SNF 종료 후</p>
+                                            </div>
+                                        </div>
+                                        <ul class="space-y-2.5 text-sm text-[#64748B]">
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">→</span>
+                                                <span>설문조사 진행</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">→</span>
+                                                <span>개선 로드맵 공개</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">→</span>
+                                                <span>지속적 소통 유지</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-[#0047AB] mt-0.5">→</span>
+                                                <span>출시일 확정 발표</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active state from all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active state to clicked item
+            event.target.classList.add('active');
+            
+            // Close mobile menu
+            document.querySelector('.sidebar').classList.remove('open');
+            
+            // Scroll to top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Reinitialize charts if needed
+            if (pageId === 'executive') {
+                initExecutiveCharts();
+            } else if (pageId === 'top-games') {
+                initTopGamesCharts();
+            } else if (pageId === 'report') {
+                // Initialize first tab charts on report page load
+                if (!window.tagsChartsInitialized) {
+                    initReportTagsCharts();
+                    window.tagsChartsInitialized = true;
+                }
+            }
+        }
+        
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        }
+        
+        // Initialize Executive Summary (no charts needed - using CSS bars)
+        function initExecutiveCharts() {
+            // Genre distribution now uses CSS progress bars instead of Chart.js
+            // No initialization needed
+        }
+        
+        // Initialize TOP Games Charts
+        function initTopGamesCharts() {
+            const wishlistCtx = document.getElementById('wishlistChart');
+            if (wishlistCtx && !wishlistCtx.chart) {
+                wishlistCtx.chart = new Chart(wishlistCtx, {
+                    type: 'bar',
+                    data: {
+                                        labels: ['1위:3576170', '2위:3504780', '3위:2841820', 'MIMESIS', '5위:3763830', 
+                                '6위:2373990', 'PIONER', '8위:3640000', 'UFL', 'Starlight'],
+                        datasets: [{
+                            label: '찜 수 증가',
+                            data: [151605, 59726, 89715, 53825, 71933, 72929, 82890, 90281, 20482, 13209],
+                            backgroundColor: 'rgba(0, 71, 171, 0.7)',
+                            borderColor: 'rgba(0, 71, 171, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return '증가량: ' + context.parsed.x.toLocaleString() + '명';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: '#64748B',
+                                    callback: function(value) {
+                                        return (value / 1000).toFixed(0) + 'K';
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.06)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#1E293B',
+                                    font: {
+                                        size: 11
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 1500,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
+                });
+            }
+            
+            const reviewCtx = document.getElementById('reviewChart');
+            if (reviewCtx && !reviewCtx.chart) {
+                reviewCtx.chart = new Chart(reviewCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['긍정적', '복합적', '확인불가'],
+                        datasets: [{
+                            data: [30, 20, 50],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.9)',
+                                'rgba(37, 99, 235, 0.8)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#1E293B',
+                                    padding: 12,
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initExecutiveCharts();
+            initTopGamesCharts();
+            initChartAnalysisCharts();
+            initGenreCharts();
+            initGameDetailsCharts();
+        });
+
+        // TOP Games Page Charts
+        function initTopGamesCharts() {
+            // TOP 10 - Wishlist Growth Chart
+            const wishlistTop10Ctx = document.getElementById('wishlistTop10Chart');
+            if (wishlistTop10Ctx && !wishlistTop10Ctx.chart) {
+                wishlistTop10Ctx.chart = new Chart(wishlistTop10Ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['빈딕투스', '와일드게이트', 'Zoochosis', '나혼자레벨업', 'PIONER'],
+                        datasets: [{
+                            label: '찜 수 증가',
+                            data: [151605, 89715, 90281, 72929, 82890],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(139, 92, 246, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(139, 92, 246, 1)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#FBB F24',
+                                bodyColor: '#1E293B',
+                                borderColor: '#FBB F24',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { 
+                                    color: '#64748B',
+                                    callback: function(value) {
+                                        return (value / 1000).toFixed(0) + 'K';
+                                    }
+                                },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            x: {
+                                ticks: { color: '#1E293B', font: { size: 10 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TOP 10 - Review Distribution
+            const reviewTop10Ctx = document.getElementById('reviewTop10Chart');
+            if (reviewTop10Ctx && !reviewTop10Ctx.chart) {
+                reviewTop10Ctx.chart = new Chart(reviewTop10Ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['압도적 긍정', '매우 긍정적', '복합적', '확인불가'],
+                        datasets: [{
+                            data: [2, 1, 1, 6],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(96, 165, 250, 0.8)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 12, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TOP 10 - Genre Distribution
+            const genreTop10Ctx = document.getElementById('genreTop10Chart');
+            if (genreTop10Ctx && !genreTop10Ctx.chart) {
+                genreTop10Ctx.chart = new Chart(genreTop10Ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['액션 RPG', '슈팅', '공포', '기타'],
+                        datasets: [{
+                            data: [2, 2, 2, 4],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(37, 99, 235, 0.8)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 12, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TOP 50 - Genre Distribution
+            const genreTop50Ctx = document.getElementById('genreTop50Chart');
+            if (genreTop50Ctx && !genreTop50Ctx.chart) {
+                genreTop50Ctx.chart = new Chart(genreTop50Ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['로그라이크', '슈팅', '액션', '시뮬레이션', '공포', '기타'],
+                        datasets: [{
+                            data: [14, 8, 6, 6, 5, 11],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(37, 99, 235, 0.8)',
+                                'rgba(96, 165, 250, 0.75)',
+                                'rgba(147, 197, 253, 0.7)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 10, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TOP 50 - Multiplayer vs Single
+            const multiplayerCtx = document.getElementById('multiplayerChart');
+            if (multiplayerCtx && !multiplayerCtx.chart) {
+                multiplayerCtx.chart = new Chart(multiplayerCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['멀티플레이', '싱글플레이'],
+                        datasets: [{
+                            data: [27, 23],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(96, 165, 250, 0.75)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 10, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TOP 50 - Demo Availability
+            const demoAvailCtx = document.getElementById('demoAvailChart');
+            if (demoAvailCtx && !demoAvailCtx.chart) {
+                demoAvailCtx.chart = new Chart(demoAvailCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['체험판 제공', '체험판 없음'],
+                        datasets: [{
+                            data: [29, 21],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 10, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Game Details Page Charts
+        function initGameDetailsCharts() {
+            // Language Support
+            const langCtx = document.getElementById('languageSupport');
+            if (langCtx && !langCtx.chart) {
+                langCtx.chart = new Chart(langCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['영어', '중국어(간체)', '한국어', '일본어', '중국어(번체)', '러시아어', '프랑스어'],
+                        datasets: [{
+                            label: '지원 게임 수',
+                            data: [50, 46, 35, 34, 27, 28, 26],
+                            backgroundColor: 'rgba(0, 71, 171, 0.8)',
+                            borderColor: 'rgba(0, 71, 171, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        const percentage = ((context.parsed.y / 50) * 100).toFixed(0);
+                                        return context.parsed.y + '개 (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: { color: '#64748B' },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            x: {
+                                ticks: { color: '#1E293B', font: { size: 10 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Release Timeline
+            const releaseCtx = document.getElementById('releaseTimeline');
+            if (releaseCtx && !releaseCtx.chart) {
+                releaseCtx.chart = new Chart(releaseCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['6월', '7월', '8월', '9월', '10월+', '미정'],
+                        datasets: [{
+                            label: '출시 게임 수',
+                            data: [8, 7, 5, 4, 2, 9],
+                            borderColor: 'rgba(52, 211, 153, 1)',
+                            backgroundColor: 'rgba(52, 211, 153, 0.2)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(52, 211, 153, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#64748B' },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            x: {
+                                ticks: { color: '#1E293B' },
+                                grid: { color: 'rgba(0, 0, 0, 0.03)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Genre & Trends Page Charts
+        function initGenreCharts() {
+            // Genre Distribution
+            const genreCtx = document.getElementById('genreDistribution');
+            if (genreCtx && !genreCtx.chart) {
+                genreCtx.chart = new Chart(genreCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['로그라이크', '슈팅', '시뮬레이션', '액션 어드벤처', '공포', '액션', '액션 RPG', 'MMORPG', '생존', '전략'],
+                        datasets: [{
+                            label: '게임 수',
+                            data: [11, 8, 6, 5, 4, 3, 2, 2, 2, 2],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(0, 71, 171, 0.8)',
+                                'rgba(139, 92, 246, 0.8)',
+                                'rgba(100, 149, 237, 0.8)',
+                                'rgba(70, 130, 180, 0.8)',
+                                'rgba(30, 144, 255, 0.8)',
+                                'rgba(148, 163, 184, 0.7)',
+                                'rgba(99, 99, 102, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(0, 71, 171, 1)',
+                                'rgba(139, 92, 246, 1)',
+                                'rgba(100, 149, 237, 1)',
+                                'rgba(70, 130, 180, 1)',
+                                'rgba(30, 144, 255, 1)',
+                                'rgba(148, 163, 184, 1)',
+                                'rgba(99, 99, 102, 1)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        const percentage = ((context.parsed.y / 50) * 100).toFixed(1);
+                                        return context.parsed.y + '개 (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#64748B' },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            x: {
+                                ticks: { 
+                                    color: '#1E293B',
+                                    font: { size: 10 }
+                                },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Multiplayer Distribution
+            const multiCtx = document.getElementById('multiplayerDistribution');
+            if (multiCtx && !multiCtx.chart) {
+                multiCtx.chart = new Chart(multiCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['멀티플레이', '싱글플레이'],
+                        datasets: [{
+                            data: [27, 23],
+                            backgroundColor: [
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(96, 165, 250, 0.75)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#1E293B',
+                                    padding: 12,
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Chart Analysis Page Charts
+        function initChartAnalysisCharts() {
+            // Chart Type Distribution (Doughnut)
+            const chartTypeCtx = document.getElementById('chartTypeDistribution');
+            if (chartTypeCtx && !chartTypeCtx.chart) {
+                chartTypeCtx.chart = new Chart(chartTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['인기 체험판', '인기 출시 예정', '떠오르는 출시 예정'],
+                        datasets: [{
+                            data: [60, 52, 39],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(96, 165, 250, 0.75)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#1E293B',
+                                    padding: 10,
+                                    font: { size: 10 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Top Chart Games (Bar)
+            const topChartCtx = document.getElementById('topChartGames');
+            if (topChartCtx && !topChartCtx.chart) {
+                topChartCtx.chart = new Chart(topChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['빈딕투스', '나혼자레벨업', 'Jump Ship', '와일드 게이트', 'Anvil', 'MIMESIS', 
+                                'No, Human', 'Holstin', 'Dispatch', 'Dead Disco'],
+                        datasets: [{
+                            label: '차트인 횟수',
+                            data: [14, 12, 12, 8, 6, 6, 6, 5, 5, 5],
+                            backgroundColor: 'rgba(0, 71, 171, 0.7)',
+                            borderColor: 'rgba(0, 71, 171, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#64748B', font: { size: 10 } },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            y: {
+                                ticks: { color: '#1E293B', font: { size: 9 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Daily Chart Activity (Line)
+            const dailyCtx = document.getElementById('dailyChartActivity');
+            if (dailyCtx && !dailyCtx.chart) {
+                dailyCtx.chart = new Chart(dailyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['6/10', '6/11', '6/12', '6/13', '6/16'],
+                        datasets: [
+                            {
+                                label: '인기 체험판',
+                                data: [8, 10, 10, 13, 19],
+                                borderColor: 'rgba(0, 71, 171, 1)',
+                                backgroundColor: 'rgba(0, 71, 171, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: '인기 출시 예정',
+                                data: [11, 9, 9, 11, 12],
+                                borderColor: 'rgba(52, 211, 153, 1)',
+                                backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: '떠오르는 출시 예정',
+                                data: [9, 9, 6, 9, 6],
+                                borderColor: 'rgba(251, 146, 60, 1)',
+                                backgroundColor: 'rgba(251, 146, 60, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#1E293B',
+                                    padding: 8,
+                                    font: { size: 9 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#64748B', font: { size: 10 } },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            x: {
+                                ticks: { color: '#1E293B', font: { size: 10 } },
+                                grid: { color: 'rgba(0, 0, 0, 0.03)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Chart Tab Switching Function
+        function showChartTab(tabName) {
+            // Hide all tab contents
+            const allContents = document.querySelectorAll('.tab-content');
+            allContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Reset all tab buttons
+            const allButtons = document.querySelectorAll('.chart-tab-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('border-[#0047AB]', 'text-[#0047AB]');
+                btn.classList.add('border-transparent', 'text-[#94A3B8]');
+            });
+
+            // Show selected tab content
+            document.getElementById('tab-content-' + tabName).style.display = 'block';
+
+            // Highlight selected tab button
+            const selectedBtn = document.getElementById('tab-' + tabName);
+            selectedBtn.classList.remove('border-transparent', 'text-[#94A3B8]');
+            selectedBtn.classList.add('border-[#0047AB]', 'text-[#0047AB]');
+        }
+
+        // TOP Games Tab Switching Function
+        function showTopGamesTab(tabName) {
+            // Hide all tab contents
+            const allContents = document.querySelectorAll('.top-games-tab-content');
+            allContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Reset all tab buttons
+            const allButtons = document.querySelectorAll('.top-games-tab-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('border-[#0047AB]', 'text-[#0047AB]');
+                btn.classList.add('border-transparent', 'text-[#94A3B8]');
+            });
+
+            // Show selected tab content
+            document.getElementById('tab-content-' + tabName).style.display = 'block';
+
+            // Highlight selected tab button
+            const selectedBtn = document.getElementById('tab-' + tabName);
+            selectedBtn.classList.remove('border-transparent', 'text-[#94A3B8]');
+            selectedBtn.classList.add('border-[#0047AB]', 'text-[#0047AB]');
+        }
+
+        // Report Tab Switching Function
+        function showReportTab(tabName) {
+            // Hide all tab contents
+            const allContents = document.querySelectorAll('.report-tab-content');
+            allContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Reset all tab buttons
+            const allButtons = document.querySelectorAll('.report-tab-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('border-[#0047AB]', 'text-[#0047AB]', 'border-[#0047AB]', 'text-[#0047AB]', 'border-[#0047AB]', 'text-[#0047AB]');
+                btn.classList.add('border-transparent', 'text-[#94A3B8]');
+            });
+
+            // Show selected tab content
+            document.getElementById('tab-content-' + tabName).style.display = 'block';
+
+            // Highlight selected tab button with appropriate color
+            const selectedBtn = document.getElementById('tab-' + tabName);
+            selectedBtn.classList.remove('border-transparent', 'text-[#94A3B8]');
+            
+            if (tabName === 'tags') {
+                selectedBtn.classList.add('border-[#0047AB]', 'text-[#0047AB]');
+            } else if (tabName === 'languages') {
+                selectedBtn.classList.add('border-[#0047AB]', 'text-[#0047AB]');
+            } else if (tabName === 'community') {
+                selectedBtn.classList.add('border-[#0047AB]', 'text-[#0047AB]');
+            }
+
+            // Initialize charts for this tab if not yet created
+            if (tabName === 'tags' && !window.tagsChartsInitialized) {
+                initReportTagsCharts();
+                window.tagsChartsInitialized = true;
+            } else if (tabName === 'languages' && !window.languagesChartsInitialized) {
+                initReportLanguagesCharts();
+                window.languagesChartsInitialized = true;
+            } else if (tabName === 'community' && !window.communityChartsInitialized) {
+                initReportCommunityCharts();
+                window.communityChartsInitialized = true;
+            }
+        }
+
+        // Initialize Report Tags Charts
+        function initReportTagsCharts() {
+            const tagsCtx = document.getElementById('tagsChart');
+            if (tagsCtx && !tagsCtx.chart) {
+                tagsCtx.chart = new Chart(tagsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Action', 'Singleplayer', 'Multiplayer', 'RPG', 'Adventure', 'Indie', 'FPS', 'Co-op', 'Atmospheric', '3D', 'Combat', 'PvE', 'Shooter', 'Story Rich', 'First-Person', 'Sci-fi', 'Horror', 'Online Co-Op', 'PvP', 'Controller'],
+                        datasets: [{
+                            label: '등장 횟수',
+                            data: [9, 8, 7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4],
+                            backgroundColor: 'rgba(0, 71, 171, 0.8)',
+                            borderColor: 'rgba(0, 71, 171, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#0047AB',
+                                bodyColor: '#1E293B',
+                                borderColor: '#0047AB',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 10,
+                                ticks: { color: '#64748B' },
+                                grid: { color: 'rgba(0, 0, 0, 0.06)' }
+                            },
+                            y: {
+                                ticks: { color: '#1E293B', font: { size: 10 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const tagCategoryCtx = document.getElementById('tagCategoryChart');
+            if (tagCategoryCtx && !tagCategoryCtx.chart) {
+                tagCategoryCtx.chart = new Chart(tagCategoryCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['플레이 타입', '장르', '테마/분위기', '특징', '기술'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(37, 99, 235, 0.8)',
+                                'rgba(96, 165, 250, 0.75)',
+                                'rgba(147, 197, 253, 0.7)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 12, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize Report Languages Charts
+        function initReportLanguagesCharts() {
+            const voiceCtx = document.getElementById('voiceChart');
+            if (voiceCtx && !voiceCtx.chart) {
+                voiceCtx.chart = new Chart(voiceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['영어', '한국어', '일본어', '중국어', '없음'],
+                        datasets: [{
+                            data: [3, 2, 2, 1, 2],
+                            backgroundColor: [
+                                'rgba(0, 51, 128, 0.9)',
+                                'rgba(0, 71, 171, 0.85)',
+                                'rgba(37, 99, 235, 0.8)',
+                                'rgba(96, 165, 250, 0.75)',
+                                'rgba(148, 163, 184, 0.6)'
+                            ],
+                            borderWidth: 0,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: {
+                            legend: { 
+                                position: 'right', 
+                                labels: { 
+                                    color: '#1E293B', 
+                                    padding: 12, 
+                                    font: { size: 11 },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                } 
+                            }
+                        }
+                    }
+                });
+            }
+
+            const interfaceCtx = document.getElementById('interfaceChart');
+            if (interfaceCtx && !interfaceCtx.chart) {
+                interfaceCtx.chart = new Chart(interfaceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['영어', '중국어 간체', '한국어', '일본어', '러시아어', '프랑스어', '독일어'],
+                        datasets: [{
+                            label: '지원 게임 수',
+                            data: [10, 9, 7, 7, 6, 6, 5],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, max: 10, ticks: { color: '#64748B' }, grid: { color: 'rgba(0, 0, 0, 0.06)' } },
+                            x: { ticks: { color: '#1E293B', font: { size: 9 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            const subtitleCtx = document.getElementById('subtitleChart');
+            if (subtitleCtx && !subtitleCtx.chart) {
+                subtitleCtx.chart = new Chart(subtitleCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['영어', '중국어 간체', '한국어', '일본어', '중국어 번체', '러시아어', '프랑스어'],
+                        datasets: [{
+                            label: '지원 게임 수',
+                            data: [10, 9, 8, 7, 6, 6, 6],
+                            backgroundColor: 'rgba(96, 165, 250, 0.8)',
+                            borderColor: 'rgba(96, 165, 250, 1)',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, max: 10, ticks: { color: '#64748B' }, grid: { color: 'rgba(0, 0, 0, 0.06)' } },
+                            x: { ticks: { color: '#1E293B', font: { size: 9 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize Report Community Charts
+        function initReportCommunityCharts() {
+            const communityCtx = document.getElementById('communityChart');
+            if (communityCtx && !communityCtx.chart) {
+                communityCtx.chart = new Chart(communityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Discord', 'YouTube', 'X(Twitter)', 'bilibili', 'TikTok', 'Reddit', 'Instagram', 'Facebook'],
+                        datasets: [{
+                            label: '운영률',
+                            data: [90, 85, 80, 35, 40, 25, 20, 15],
+                            backgroundColor: [
+                                'rgba(88, 101, 242, 0.8)',
+                                'rgba(255, 0, 0, 0.8)',
+                                'rgba(29, 155, 240, 0.8)',
+                                'rgba(0, 161, 214, 0.8)',
+                                'rgba(0, 0, 0, 0.8)',
+                                'rgba(255, 69, 0, 0.8)',
+                                'rgba(228, 64, 95, 0.8)',
+                                'rgba(24, 119, 242, 0.8)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                                titleColor: '#F97316',
+                                bodyColor: '#1E293B',
+                                borderColor: '#F97316',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y + '% 운영';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { color: '#64748B', callback: function(value) { return value + '%'; } }, grid: { color: 'rgba(0, 0, 0, 0.06)' } },
+                            x: { ticks: { color: '#1E293B', font: { size: 10 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // ========================================
+        // GitHub 데이터 로딩 기능
+        // ========================================
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/noodle-kim/snf-dashboard-202506/main/';
+        
+        // CSV 파일 로드 함수
+        async function loadCSV(filename) {
+            try {
+                const response = await fetch(GITHUB_BASE_URL + filename);
+                const csvText = await response.text();
+                return new Promise((resolve) => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (results) => resolve(results.data)
+                    });
+                });
+            } catch (error) {
+                console.error(`Error loading ${filename}:`, error);
+                return null;
+            }
+        }
+        
+        // JSON 파일 로드 함수
+        async function loadJSON(filename) {
+            try {
+                const response = await fetch(GITHUB_BASE_URL + filename);
+                return await response.json();
+            } catch (error) {
+                console.error(`Error loading ${filename}:`, error);
+                return null;
+            }
+        }
+        
+        // KPI 카드 업데이트
+        function updateKPICards(kpiData) {
+            if (!kpiData) return;
+            
+            const formatValue = (metric, value) => {
+                if (metric === 'total_games') return Number(value).toLocaleString() + '개';
+                if (metric === 'wishlist_increase') return '+' + (Number(value) / 1000).toFixed(1) + 'K';
+                if (metric === 'avg_chart_count') return value + '회';
+                if (metric === 'multiplayer_ratio') return value + '%';
+                return value;
+            };
+            
+            kpiData.forEach((row, index) => {
+                const valueEl = document.getElementById(`kpi-value-${index}`);
+                const labelEl = document.getElementById(`kpi-label-${index}`);
+                const changeEl = document.getElementById(`kpi-change-${index}`);
+                
+                if (valueEl) valueEl.textContent = formatValue(row.metric, row.value);
+                if (labelEl) labelEl.textContent = row.label;
+                if (changeEl) {
+                    changeEl.textContent = row.change;
+                    // 긍정적 변화면 초록색, 아니면 회색
+                    if (row.change_type === 'positive') {
+                        changeEl.className = 'text-xs px-2 py-1 bg-emerald-100 text-emerald-600 rounded-lg font-semibold';
+                    } else {
+                        changeEl.className = 'text-xs text-slate-400';
+                    }
+                }
+            });
+            
+            console.log('✅ KPI 카드 업데이트 완료');
+        }
+        
+        // 모든 GitHub 데이터 로드 및 적용
+        async function loadGitHubData() {
+            console.log('🔄 GitHub에서 데이터 로딩 중...');
+            
+            // KPI 데이터 로드
+            const kpiData = await loadCSV('kpi.csv');
+            if (kpiData) updateKPICards(kpiData);
+            
+            // 추후 확장: TOP10, 장르 분포, 인사이트 등
+            // const top10Data = await loadCSV('top10_games.csv');
+            // const genreData = await loadCSV('genre_distribution.csv');
+            // const insightsData = await loadJSON('insights.json');
+            
+            console.log('✅ GitHub 데이터 로딩 완료!');
+        }
+        
+        // Initialize page on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initExecutiveCharts();
+            
+            // GitHub 데이터 로드
+            loadGitHubData();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

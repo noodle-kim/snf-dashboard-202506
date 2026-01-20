@@ -1,0 +1,10 @@
+﻿platform,percentage,region,priority
+Discord,90,글로벌,필수
+YouTube,85,글로벌,필수
+X (Twitter),80,글로벌,필수
+Reddit,65,북미/유럽,권장
+bilibili,45,중국,권장
+微博,40,중국,권장
+TikTok,35,동아시아,선택
+네이버,30,한국,선택
+인벤,25,한국,선택
