@@ -159,13 +159,13 @@ def load_all_raw_data():
 
 
 def save_csv(data, output_path):
-    """데이터를 CSV로 저장"""
+    """데이터를 CSV로 저장 (UTF-8 BOM으로 저장하여 Excel/Windows 호환)"""
     if not data:
         return False
     
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
-    with open(output_path, 'w', encoding='utf-8', newline='') as f:
+    with open(output_path, 'w', encoding='utf-8-sig', newline='') as f:
         if isinstance(data, list) and len(data) > 0:
             writer = csv.DictWriter(f, fieldnames=data[0].keys())
             writer.writeheader()

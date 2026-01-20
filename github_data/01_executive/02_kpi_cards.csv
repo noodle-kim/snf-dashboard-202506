@@ -1,4 +1,4 @@
-id,label,value,subtext,icon,color
+﻿id,label,value,subtext,icon,color
 total_games,총 분석 게임,50,TOP50 기준,🎮,#0047AB
 korean_games,한국 게임사,0,개 진출,🇰🇷,#10B981
 top_genre,1위 장르,로그라이크,14%,⚔️,#8B5CF6
