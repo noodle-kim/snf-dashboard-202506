@@ -968,7 +968,7 @@
                                     <tbody id="demo-tbody">
                                         <!-- 데이터는 CSV(05_demo_chart.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td colspan="5" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1016,7 +1016,7 @@
                                     <tbody id="popular-upcoming-tbody">
                                         <!-- 데이터는 CSV(06_popular_upcoming.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td colspan="4" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1065,7 +1065,7 @@
                                     <tbody id="trending-upcoming-tbody">
                                         <!-- 데이터는 CSV(07_trending_upcoming.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td colspan="5" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -3060,9 +3060,9 @@
                 <tr>
                     <td class="text-center font-bold ${index < 3 ? 'text-[#0047AB]' : ''}">${row.rank}</td>
                     <td class="font-semibold">${row.name}</td>
-                    <td class="text-center">${row.appearances || row.chart_count || '-'}</td>
-                    <td class="text-center">${row.best_rank ? row.best_rank + '위' : '-'}</td>
-                    <td class="text-center">${row.consecutive_days ? row.consecutive_days + '일' : '-'}</td>
+                    <td class="text-right">${row.appearances || row.chart_count || '-'}</td>
+                    <td class="text-center">${row.best_rank || '-'}</td>
+                    <td class="text-center">${row.consecutive_days || '-'}</td>
                 </tr>
             `).join('');
             console.log('✅ 인기 체험판 테이블 업데이트 완료');
@@ -3079,8 +3079,8 @@
                 <tr>
                     <td class="text-center font-bold ${index < 3 ? 'text-[#0047AB]' : ''}">${row.rank}</td>
                     <td class="font-semibold">${row.name}</td>
-                    <td class="text-center">${row.appearances || row.chart_count || '-'}</td>
-                    <td class="text-center">${row.best_rank ? row.best_rank + '위' : '-'}</td>
+                    <td class="text-right">${row.appearances || row.chart_count || '-'}</td>
+                    <td class="text-center">${row.best_rank || '-'}</td>
                 </tr>
             `).join('');
             console.log('✅ 인기 출시 예정 테이블 업데이트 완료');
@@ -3097,8 +3097,7 @@
                 <tr>
                     <td class="text-center font-bold ${index < 3 ? 'text-[#0047AB]' : ''}">${row.rank}</td>
                     <td class="font-semibold">${row.name}</td>
-                    <td class="text-center">${row.appearances || row.chart_count || '-'}</td>
-                    <td class="text-center">${row.best_rank ? row.best_rank + '위' : '-'}</td>
+                    <td class="text-right">${row.appearances || row.chart_count || '-'}</td>
                     <td class="text-center">${row.trend_direction || '-'}</td>
                 </tr>
             `).join('');
@@ -3335,6 +3334,15 @@
                     loadCSV('04_report/05_community.csv'),
                     loadCSV('04_report/06_tab_insights.csv')          // v2.1 NEW
                 ]);
+                
+                console.log('📊 04_report 데이터 확인:', {
+                    reportChecklist: reportChecklist?.length || 'null',
+                    reportKpi: reportKpi?.length || 'null',
+                    tagsAnalysis: tagsAnalysis?.length || 'null',
+                    languageSupport: languageSupport?.length || 'null',
+                    community: community?.length || 'null',
+                    reportInsights: reportInsights?.length || 'null'
+                });
                 
                 updateReportChecklist(reportChecklist);
                 updateReportKPI(reportKpi);
