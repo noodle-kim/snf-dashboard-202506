@@ -3093,14 +3093,31 @@
             const tbody = document.getElementById('trending-upcoming-tbody');
             if (!tbody) return;
             
-            tbody.innerHTML = data.map((row, index) => `
-                <tr>
-                    <td class="text-center font-bold ${index < 3 ? 'text-[#0047AB]' : ''}">${row.rank}</td>
-                    <td class="font-semibold">${row.name}</td>
-                    <td class="text-right">${row.appearances || row.chart_count || '-'}</td>
-                    <td class="text-center">${row.trend_direction || '-'}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = data.map((row, index) => {
+                // 트렌드 방향에 따른 아이콘과 색상
+                let trendIcon = '';
+                let trendClass = 'text-slate-500';
+                if (row.trend_direction === '상승') {
+                    trendIcon = '📈';
+                    trendClass = 'text-green-600';
+                } else if (row.trend_direction === '하락') {
+                    trendIcon = '📉';
+                    trendClass = 'text-red-500';
+                } else if (row.trend_direction === '유지') {
+                    trendIcon = '➡️';
+                    trendClass = 'text-blue-500';
+                }
+                
+                return `
+                    <tr>
+                        <td class="text-center font-bold ${index < 3 ? 'text-[#0047AB]' : ''}">${row.rank}</td>
+                        <td class="font-semibold">${row.name}</td>
+                        <td class="text-center">${row.appearances || '-'}</td>
+                        <td class="text-center">${row.best_rank || '-'}</td>
+                        <td class="text-center ${trendClass}">${trendIcon} ${row.trend_direction || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
             console.log('✅ 떠오르는 출시 예정 테이블 업데이트 완료');
         }
         
