@@ -639,11 +639,10 @@
 
                     <!-- TOP 10 Tab Content -->
                     <div id="tab-content-top10" class="top-games-tab-content">
-                        <div class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#0047AB] mb-6">
-                            <p class="text-sm text-[#64748B]">
+                        <div id="top10-insight-box" class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#0047AB] mb-6">
+                            <p id="top10-insight-text" class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                SNF 기간 중 실제로 가장 많이 플레이된 게임들입니다. 리뷰 수와 찜 수 증가가 모두 뛰어난 검증된 타이틀들이에요. 
-                                간체 중국어 유저들의 활동이 특히 활발했습니다.
+                                <span id="top10-insight-content">SNF 기간 중 실제로 가장 많이 플레이된 게임들입니다. 리뷰 수와 찜 수 증가가 모두 뛰어난 검증된 타이틀들이에요. 간체 중국어 유저들의 활동이 특히 활발했습니다.</span>
                             </p>
                         </div>
 
@@ -791,38 +790,38 @@
 
                     <!-- TOP 50 Tab Content -->
                     <div id="tab-content-top50" class="top-games-tab-content" style="display:none;">
-                        <div class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#3B82F6] mb-6">
-                            <p class="text-sm text-[#64748B]">
+                        <div id="top50-insight-box" class="bg-[#FFFFFF] p-4 rounded-xl border-l-4 border-[#3B82F6] mb-6">
+                            <p id="top50-insight-text" class="text-sm text-[#64748B]">
                                 <strong class="text-[#3B82F6]">💡 이 차트의 특징:</strong> 
-                                TOP 50까지 확장하면 다양한 인디 게임들도 포함됩니다. 로그라이크 장르가 압도적으로 많고, 
-                                멀티플레이 게임이 싱글플레이보다 약간 더 많습니다. 체험판 제공 여부가 성공에 큰 영향을 미쳤어요.
+                                <span id="top50-insight-content">TOP 50까지 확장하면 다양한 인디 게임들도 포함됩니다. 로그라이크 장르가 압도적으로 많고, 멀티플레이 게임이 싱글플레이보다 약간 더 많습니다. 체험판 제공 여부가 성공에 큰 영향을 미쳤어요.</span>
                             </p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div id="top50-summary-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <!-- TOP 50 Summary Cards는 JavaScript에서 동적으로 로드됩니다 -->
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">🎮</span>
-                                    <h4 class="font-semibold text-[#0047AB]">체험판 접속 가능</h4>
+                                    <h4 id="top50-summary-title-0" class="font-semibold text-[#0047AB]">체험판 접속 가능</h4>
                                 </div>
-                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">29개</p>
-                                <p class="text-sm text-[#64748B]">TOP 50 중 58%</p>
+                                <p id="top50-summary-value-0" class="text-[28px] font-bold text-[#1E293B] mb-1">29개</p>
+                                <p id="top50-summary-desc-0" class="text-sm text-[#64748B]">TOP 50 중 58%</p>
                             </div>
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">👥</span>
-                                    <h4 class="font-semibold text-[#3B82F6]">멀티플레이</h4>
+                                    <h4 id="top50-summary-title-1" class="font-semibold text-[#3B82F6]">멀티플레이</h4>
                                 </div>
-                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">27개</p>
-                                <p class="text-sm text-[#64748B]">54% (싱글 23개)</p>
+                                <p id="top50-summary-value-1" class="text-[28px] font-bold text-[#1E293B] mb-1">27개</p>
+                                <p id="top50-summary-desc-1" class="text-sm text-[#64748B]">54% (싱글 23개)</p>
                             </div>
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">🎯</span>
-                                    <h4 class="font-semibold text-[#8B5CF6]">최다 장르</h4>
+                                    <h4 id="top50-summary-title-2" class="font-semibold text-[#8B5CF6]">최다 장르</h4>
                                 </div>
-                                <p class="text-[28px] font-bold text-[#1E293B] mb-1">로그라이크</p>
-                                <p class="text-sm text-[#64748B]">14개 게임 (28%)</p>
+                                <p id="top50-summary-value-2" class="text-[28px] font-bold text-[#1E293B] mb-1">로그라이크</p>
+                                <p id="top50-summary-desc-2" class="text-sm text-[#64748B]">14개 게임 (28%)</p>
                             </div>
                         </div>
 
@@ -861,23 +860,14 @@
                                         <th class="text-center">차트인</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="top50-tbody">
+                                    <!-- TOP 50 테이블은 JavaScript에서 동적으로 로드됩니다 -->
                                     <tr><td class="text-center font-bold text-[#0047AB]">1</td><td class="font-semibold">빈딕투스: 디파잉 페이트</td><td>액션 RPG</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center font-semibold">14</td></tr>
                                     <tr><td class="text-center font-bold text-[#94A3B8]">2</td><td class="font-semibold">Jump Ship</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025.07.23</td><td class="text-center font-semibold">9</td></tr>
                                     <tr><td class="text-center font-bold text-[#3B82F6]">3</td><td class="font-semibold">와일드게이트</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center font-semibold">15</td></tr>
                                     <tr><td class="text-center">4</td><td>MIMESIS</td><td>공포</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년 3분기</td><td class="text-center">6</td></tr>
                                     <tr><td class="text-center">5</td><td>Dead Rising Deluxe Remaster</td><td>액션</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>출시예정</td><td class="text-center">9</td></tr>
-                                    <tr><td class="text-center">6</td><td>나 혼자만 레벨업: Arise</td><td>액션 RPG</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center">12</td></tr>
-                                    <tr><td class="text-center">7</td><td>PIONER</td><td>MMORPG</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년</td><td class="text-center">5</td></tr>
-                                    <tr><td class="text-center">8</td><td>Zoochosis</td><td>공포</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년 3분기</td><td class="text-center">12</td></tr>
-                                    <tr><td class="text-center">9</td><td>UFL</td><td>스포츠 (축구)</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center">5</td></tr>
-                                    <tr><td class="text-center">10</td><td>Starlight Re:Volver</td><td>로그라이크</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>2025년 3분기</td><td class="text-center">1</td></tr>
-                                    <tr><td class="text-center text-[#94A3B8]">11</td><td>Gray Zone Warfare</td><td>슈팅 (1인칭)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">-</td></tr>
-                                    <tr><td class="text-center text-[#94A3B8]">12</td><td>Cat Quest III</td><td>로그라이크</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>출시예정</td><td class="text-center">-</td></tr>
-                                    <tr><td class="text-center text-[#94A3B8]">13</td><td>Stellar Nomad</td><td>건설 (우주)</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">-</td></tr>
-                                    <tr><td class="text-center text-[#94A3B8]">14</td><td>Anvil Empires</td><td>전략</td><td class="text-center"><span class="badge badge-neutral">✗</span></td><td class="text-center">멀티</td><td>출시예정</td><td class="text-center">7</td></tr>
-                                    <tr><td class="text-center text-[#94A3B8]">15</td><td>Wheel World</td><td>액션 어드벤처</td><td class="text-center"><span class="badge badge-positive">✓</span></td><td class="text-center">싱글</td><td>2025년</td><td class="text-center">9</td></tr>
-                                    <tr><td colspan="7" class="text-center text-[#94A3B8] text-sm py-2">... 16~50위 게임 생략 (총 50개 게임 데이터 보유) ...</td></tr>
+                                    <tr><td colspan="7" class="text-center text-[#94A3B8] text-sm py-2">... 데이터 로딩 중 ...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1042,11 +1032,10 @@
                         <div id="tab-content-demo" class="tab-content">
                         <!-- 인기 체험판 -->
                         <div class="data-table">
-                            <div class="insight-box mb-6">
+                            <div id="chart-insight-demo" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    체험판 차트는 가장 안정적입니다. 상위권 게임들이 5일 내내 꾸준히 순위를 유지했어요. 
-                                    빈딕투스와 나혼자레벨업 같은 한국 게임이 강세를 보였고, 중국 퍼블리셔 bilibili도 적극 참여했습니다.
+                                    <span id="chart-insight-demo-content">체험판 차트는 가장 안정적입니다. 상위권 게임들이 5일 내내 꾸준히 순위를 유지했어요. 빈딕투스와 나혼자레벨업 같은 한국 게임이 강세를 보였고, 중국 퍼블리셔 bilibili도 적극 참여했습니다.</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -1129,11 +1118,10 @@
                         <!-- Tab Content: 인기 출시 예정 -->
                         <div id="tab-content-popular" class="tab-content" style="display:none;">
                         <div class="data-table">
-                            <div class="insight-box mb-6">
+                            <div id="chart-insight-popular" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    대형 타이틀들의 격전지입니다. 빈딕투스와 나혼자레벨업이 1~2위를 두고 치열하게 경쟁했어요. 
-                                    Nacon 같은 서양 퍼블리셔와 한국 퍼블리셔가 맞붙는 흥미로운 구도가 펼쳐졌습니다.
+                                    <span id="chart-insight-popular-content">대형 타이틀들의 격전지입니다. 빈딕투스와 나혼자레벨업이 1~2위를 두고 치열하게 경쟁했어요. Nacon 같은 서양 퍼블리셔와 한국 퍼블리셔가 맞붙는 흥미로운 구도가 펼쳐졌습니다.</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -1216,11 +1204,10 @@
                         <!-- Tab Content: 떠오르는 출시 예정 -->
                         <div id="tab-content-trending" class="tab-content" style="display:none;">
                         <div class="data-table">
-                            <div class="insight-box mb-6">
+                            <div id="chart-insight-trending" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    가장 변화가 빠른 차트입니다. 매일 1위가 바뀔 정도로 역동적이에요. 
-                                    Moonlighter 2처럼 인디 게임도 1위에 오를 수 있어서, 바이럴 마케팅의 효과가 가장 큰 차트입니다.
+                                    <span id="chart-insight-trending-content">가장 변화가 빠른 차트입니다. 매일 1위가 바뀔 정도로 역동적이에요. Moonlighter 2처럼 인디 게임도 1위에 오를 수 있어서, 바이럴 마케팅의 효과가 가장 큰 차트입니다.</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -1386,11 +1373,10 @@
 
                     <!-- Tags Tab -->
                     <div id="tab-content-tags" class="report-tab-content">
-                        <div class="insight-box mb-6">
+                        <div id="report-insight-tags" class="insight-box mb-6">
                             <p class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
-                                TOP 10 게임의 90%가 "Action" 태그를 사용하고 있습니다. 평균 18개의 태그를 활용하며, 
-                                Multiplayer, Singleplayer, RPG 태그가 가장 빈번하게 등장했습니다.
+                                <span id="report-insight-tags-content">TOP 10 게임의 90%가 "Action" 태그를 사용하고 있습니다. 평균 18개의 태그를 활용하며, Multiplayer, Singleplayer, RPG 태그가 가장 빈번하게 등장했습니다.</span>
                             </p>
                         </div>
 
@@ -1455,12 +1441,12 @@
 
                     <!-- Languages Tab -->
                     <div id="tab-content-languages" class="report-tab-content" style="display:none;">
-                        <div class="insight-box mb-6">
+                        <div id="report-insight-languages" class="insight-box mb-6">
                             <p class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
-                                영어는 100% 필수이며, 중국어 간체 지원률이 92%로 압도적입니다. 
-                                음성 지원은 42%만 제공하지만, 인터페이스와 자막은 평균 7~8개 언어를 지원합니다.
+                                <span id="report-insight-languages-content">영어는 100% 필수이며, 중국어 간체 지원률이 92%로 압도적입니다. 음성 지원은 42%만 제공하지만, 인터페이스와 자막은 평균 7~8개 언어를 지원합니다.</span>
                             </p>
+                        </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1519,11 +1505,10 @@
 
                     <!-- Community Tab -->
                     <div id="tab-content-community" class="report-tab-content" style="display:none;">
-                        <div class="insight-box mb-6">
+                        <div id="report-insight-community" class="insight-box mb-6">
                             <p class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
-                                TOP 게임들은 평균 4.2개의 커뮤니티 채널을 운영합니다. Discord(90%), YouTube(85%), X(80%)가 
-                                필수 3종 세트이며, 주 2회 이상 업데이트하는 게임이 차트 상위권을 차지했습니다.
+                                <span id="report-insight-community-content">TOP 게임들은 평균 4.2개의 커뮤니티 채널을 운영합니다. Discord(90%), YouTube(85%), X(80%)가 필수 3종 세트이며, 주 2회 이상 업데이트하는 게임이 차트 상위권을 차지했습니다.</span>
                             </p>
                         </div>
 
@@ -3097,6 +3082,113 @@
         }
         
         // ========================================
+        // v2.1 새로운 함수: TOP Games 인사이트 업데이트
+        // ========================================
+        
+        // TOP 10 인사이트 박스 업데이트
+        function updateTop10Insight(data) {
+            if (!data || data.length === 0) return;
+            
+            const row = data.find(r => r.tab_id === 'top10') || data[0];
+            const contentEl = document.getElementById('top10-insight-content');
+            if (contentEl && row) {
+                contentEl.textContent = row.content;
+            }
+            console.log('✅ TOP 10 인사이트 업데이트 완료');
+        }
+        
+        // TOP 50 인사이트 박스 업데이트
+        function updateTop50Insight(data) {
+            if (!data || data.length === 0) return;
+            
+            const row = data.find(r => r.tab_id === 'top50') || (data.length > 1 ? data[1] : null);
+            const contentEl = document.getElementById('top50-insight-content');
+            if (contentEl && row) {
+                contentEl.textContent = row.content;
+            }
+            console.log('✅ TOP 50 인사이트 업데이트 완료');
+        }
+        
+        // TOP 50 Summary Cards 업데이트
+        function updateTop50Summary(data) {
+            if (!data || data.length === 0) return;
+            
+            data.forEach((row, index) => {
+                const titleEl = document.getElementById(`top50-summary-title-${index}`);
+                const valueEl = document.getElementById(`top50-summary-value-${index}`);
+                const descEl = document.getElementById(`top50-summary-desc-${index}`);
+                
+                if (titleEl) titleEl.textContent = row.title;
+                if (valueEl) valueEl.textContent = row.value;
+                if (descEl) descEl.textContent = row.description;
+            });
+            console.log('✅ TOP 50 요약 카드 업데이트 완료');
+        }
+        
+        // TOP 50 테이블 업데이트
+        function updateTop50Table(data) {
+            if (!data || data.length === 0) return;
+            
+            const tbody = document.getElementById('top50-tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = data.slice(0, 15).map((row, index) => {
+                const rankColor = index < 3 ? ['text-[#0047AB]', 'text-[#94A3B8]', 'text-[#3B82F6]'][index] : 'text-[#94A3B8]';
+                const rankBold = index < 3 ? 'font-bold' : '';
+                const demoBadge = row.has_demo === 'Y' || row.has_demo === '✓' ? 'badge-positive' : 'badge-neutral';
+                const demoText = row.has_demo === 'Y' || row.has_demo === '✓' ? '✓' : '✗';
+                
+                return `
+                    <tr>
+                        <td class="text-center ${rankBold} ${rankColor}">${row.rank}</td>
+                        <td class="font-semibold">${row.name}</td>
+                        <td>${row.genre}</td>
+                        <td class="text-center"><span class="badge ${demoBadge}">${demoText}</span></td>
+                        <td class="text-center">${row.play_type || '-'}</td>
+                        <td>${row.release_date || '-'}</td>
+                        <td class="text-center ${index < 3 ? 'font-semibold' : ''}">${row.chart_appearances || '-'}</td>
+                    </tr>
+                `;
+            }).join('') + `<tr><td colspan="7" class="text-center text-[#94A3B8] text-sm py-2">... 16~50위 게임 생략 (총 50개 게임 데이터 보유) ...</td></tr>`;
+            
+            console.log('✅ TOP 50 테이블 업데이트 완료');
+        }
+        
+        // ========================================
+        // v2.1 새로운 함수: Charts 인사이트 업데이트
+        // ========================================
+        
+        // 차트 탭별 인사이트 업데이트
+        function updateChartInsights(data) {
+            if (!data || data.length === 0) return;
+            
+            data.forEach(row => {
+                const contentEl = document.getElementById(`chart-insight-${row.chart_type}-content`);
+                if (contentEl) {
+                    contentEl.textContent = row.content;
+                }
+            });
+            console.log('✅ 차트 인사이트 업데이트 완료');
+        }
+        
+        // ========================================
+        // v2.1 새로운 함수: Report 인사이트 업데이트
+        // ========================================
+        
+        // Report 탭별 인사이트 업데이트
+        function updateReportInsights(data) {
+            if (!data || data.length === 0) return;
+            
+            data.forEach(row => {
+                const contentEl = document.getElementById(`report-insight-${row.tab_id}-content`);
+                if (contentEl) {
+                    contentEl.textContent = row.content;
+                }
+            });
+            console.log('✅ Report 인사이트 업데이트 완료');
+        }
+        
+        // ========================================
         // 03_charts 섹션 업데이트 함수들
         // ========================================
         
@@ -3308,10 +3400,10 @@
         }
         
         // ========================================
-        // 메인 데이터 로딩 함수
+        // 메인 데이터 로딩 함수 (v2.1)
         // ========================================
         async function loadGitHubData() {
-            console.log('🔄 GitHub에서 데이터 로딩 중... (v2.0)');
+            console.log('🔄 GitHub에서 데이터 로딩 중... (v2.1)');
             
             try {
                 // ========================================
@@ -3337,35 +3429,41 @@
                 updateSnfGuide(execSnfGuide);
                 
                 // ========================================
-                // 02_top_games 데이터 로드
+                // 02_top_games 데이터 로드 (v2.1 확장)
                 // ========================================
                 console.log('🏆 02_top_games 로딩...');
-                const [topGamesKpi, topGamesFindings, top10Table, top10Charts, top50Table, top50Charts] = await Promise.all([
+                const [topGamesKpi, topGamesFindings, top10Table, top10Charts, top50Table, top50Charts, topGamesInsight, top50Summary] = await Promise.all([
                     loadCSV('02_top_games/01_kpi_cards.csv'),
                     loadCSV('02_top_games/02_key_findings.csv'),
                     loadCSV('02_top_games/03_top10_table.csv'),
                     loadCSV('02_top_games/04_top10_charts.csv'),
                     loadCSV('02_top_games/05_top50_table.csv'),
-                    loadCSV('02_top_games/06_top50_charts.csv')
+                    loadCSV('02_top_games/06_top50_charts.csv'),
+                    loadCSV('02_top_games/07_tab_insights.csv'),      // v2.1 NEW
+                    loadCSV('02_top_games/08_top50_summary.csv')      // v2.1 NEW
                 ]);
                 
                 updateTopGamesKPI(topGamesKpi);
                 updateTopGamesFindings(topGamesFindings);
                 updateTop10Table(top10Table);
-                // TODO: 차트 데이터 적용 (top10Charts, top50Charts)
+                updateTop50Table(top50Table);                        // v2.1 NEW
+                updateTop10Insight(topGamesInsight);                  // v2.1 NEW
+                updateTop50Insight(topGamesInsight);                  // v2.1 NEW
+                updateTop50Summary(top50Summary);                     // v2.1 NEW
                 
                 // ========================================
-                // 03_charts 데이터 로드
+                // 03_charts 데이터 로드 (v2.1 확장)
                 // ========================================
                 console.log('📈 03_charts 로딩...');
-                const [chartsKpi, chartsFindings, chartData, chartsStrategy, demoChart, popularUpcoming, trendingUpcoming] = await Promise.all([
+                const [chartsKpi, chartsFindings, chartData, chartsStrategy, demoChart, popularUpcoming, trendingUpcoming, chartInsights] = await Promise.all([
                     loadCSV('03_charts/01_kpi_cards.csv'),
                     loadCSV('03_charts/02_key_findings.csv'),
                     loadCSV('03_charts/03_chart_data.csv'),
                     loadCSV('03_charts/04_strategy_cards.csv'),
                     loadCSV('03_charts/05_demo_chart.csv'),
                     loadCSV('03_charts/06_popular_upcoming.csv'),
-                    loadCSV('03_charts/07_trending_upcoming.csv')
+                    loadCSV('03_charts/07_trending_upcoming.csv'),
+                    loadCSV('03_charts/08_chart_insights.csv')        // v2.1 NEW
                 ]);
                 
                 updateChartsKPI(chartsKpi);
@@ -3373,17 +3471,19 @@
                 updateDemoTable(demoChart);
                 updatePopularUpcomingTable(popularUpcoming);
                 updateTrendingUpcomingTable(trendingUpcoming);
+                updateChartInsights(chartInsights);                   // v2.1 NEW
                 
                 // ========================================
-                // 04_report 데이터 로드
+                // 04_report 데이터 로드 (v2.1 확장)
                 // ========================================
                 console.log('📋 04_report 로딩...');
-                const [reportChecklist, reportKpi, tagsAnalysis, languageSupport, community] = await Promise.all([
+                const [reportChecklist, reportKpi, tagsAnalysis, languageSupport, community, reportInsights] = await Promise.all([
                     loadCSV('04_report/01_checklist.csv'),
                     loadCSV('04_report/02_kpi_cards.csv'),
                     loadCSV('04_report/03_tags_analysis.csv'),
                     loadCSV('04_report/04_language_support.csv'),
-                    loadCSV('04_report/05_community.csv')
+                    loadCSV('04_report/05_community.csv'),
+                    loadCSV('04_report/06_tab_insights.csv')          // v2.1 NEW
                 ]);
                 
                 updateReportChecklist(reportChecklist);
@@ -3391,8 +3491,9 @@
                 updateTagsAnalysis(tagsAnalysis);
                 updateLanguageSupport(languageSupport);
                 updateCommunity(community);
+                updateReportInsights(reportInsights);                 // v2.1 NEW
                 
-                console.log('✅ 모든 GitHub 데이터 로딩 완료! (25개 CSV)');
+                console.log('✅ 모든 GitHub 데이터 로딩 완료! (v2.1 - 28개 CSV)');
                 
                 // 업데이트 시간 표시
                 const updateTimeEl = document.getElementById('last-load-time');

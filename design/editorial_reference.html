@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Modern Editorial Dashboard</title>
+    <style>
+        @import url('https://rsms.me/inter/inter.css');
+
+        :root {
+            /* Palette Definition */
+            --bg-stone: #EBEAE6; /* 이미지의 웜 그레이 톤 */
+            --bg-card: #EBEAE6;  /* 카드 배경을 전체 배경과 동일하게 하여 경계만 남김 */
+            
+            --color-navy: #0F172A; /* Main Text */
+            --color-cobalt: #0047AB; /* Accent Color */
+            
+            --border-line: rgba(15, 23, 42, 0.15); /* 얇은 그리드 라인 */
+
+            /* Design Tokens */
+            --font-family: 'Inter', -apple-system, sans-serif;
+            --radius-sharp: 0px; /* 모던함을 위해 직각 처리 */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-stone);
+            font-family: var(--font-family);
+            color: var(--color-navy);
+            margin: 0;
+            padding: 60px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 노이즈 텍스처를 살짝 추가하여 종이 질감 연출 가능 (선택사항) */
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px; /* 갭을 1px로 줄이고 배경색을 라인처럼 활용하거나, 아래처럼 border로 처리 */
+            background: var(--border-line); /* 그리드 라인 색상 */
+            border: 1px solid var(--border-line);
+            padding: 1px; /* 테두리 라인 확보 */
+        }
+
+        .card {
+            background: var(--bg-stone); /* 배경색과 동일하게 */
+            padding: 32px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            /* 그림자 제거, 플랫한 디자인 */
+            box-shadow: none;
+            border-radius: 0; /* 직각 */
+            transition: background 0.3s ease;
+        }
+
+        .card:hover {
+            background: #F2F1ED; /* 호버 시 아주 살짝 밝아짐 */
+        }
+
+        /* Typography Override */
+        .label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--color-navy);
+            text-transform: uppercase;
+            letter-spacing: 1.5px; /* 이미지 상단 텍스트처럼 자간 넓힘 */
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0.6;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .value {
+            font-size: 56px; /* 이미지의 MODENA처럼 과감한 크기 */
+            font-weight: 800; /* Extra Bold */
+            color: var(--color-navy);
+            letter-spacing: -2px; /* 타이틀은 자간을 좁혀서 단단하게 */
+            line-height: 0.9;
+            margin-bottom: 8px;
+        }
+
+        /* Specific Card Styles */
+        .card.insight {
+            grid-column: span 2;
+            background: var(--color-navy); /* 반전을 주어 강조 */
+            color: #fff;
+        }
+
+        .card.insight .label { color: #fff; opacity: 0.5; }
+        .card.insight .insight-text { color: #EBEAE6; }
+        .card.insight .highlight {
+            color: #fff;
+            background: var(--color-cobalt);
+            padding: 2px 8px;
+            font-weight: 500;
+            border-radius: 0;
+        }
+
+        .insight-text {
+            font-size: 18px;
+            line-height: 1.5;
+            font-weight: 300;
+            margin-top: auto;
+        }
+
+        /* Ring Chart Styling */
+        .card.ring {
+            grid-column: span 1;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .ring-svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+        .ring-track { fill: none; stroke: rgba(15, 23, 42, 0.1); stroke-width: 4; } /* 얇고 세련되게 */
+        
+        .ring-fill {
+            fill: none; 
+            stroke: var(--color-cobalt);
+            stroke-width: 4;
+            stroke-linecap: square; /* 라운드 대신 스퀘어 */
+            stroke-dasharray: 300;
+            stroke-dashoffset: 45; 
+        }
+        
+        .ring-center { position: absolute; text-align: center; }
+        .ring-num { 
+            font-size: 32px; 
+            font-weight: 800; 
+            color: var(--color-navy); 
+            letter-spacing: -1.5px; 
+        }
+
+        /* Bar Chart Styling */
+        .card.bar-chart {
+            grid-column: span 2;
+        }
+        
+        .bars {
+            flex-grow: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 30px;
+        }
+        
+        .bar-wrap {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .bar {
+            width: 100%; /* 막대를 꽉 채워서 블록 느낌 */
+            background: rgba(15, 23, 42, 0.1);
+            border-radius: 0px; /* 직각 */
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .bar.active { 
+            background: var(--color-navy);
+        }
+        
+        .bar.peak { 
+            background: var(--color-cobalt); /* 포인트 컬러 */
+            box-shadow: none;
+            z-index: 1;
+        }
+        
+        .bar-lbl {
+            margin-top: 12px;
+            font-size: 10px;
+            color: var(--color-navy);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Trend Badge & Dots */
+        .live-dot {
+            width: 6px; height: 6px;
+            background: var(--color-cobalt);
+            border-radius: 50%;
+        }
+        
+        .trend-badge {
+             font-size: 14px;
+             font-weight: 600;
+             color: var(--color-cobalt);
+             background: transparent; /* 배경 제거 */
+             padding: 0;
+             display: inline-flex;
+             align-items: center;
+             gap: 6px;
+             margin-top: 12px;
+        }
+
+        /* Helper Text */
+        .sub-text {
+            font-size: 11px; 
+            color: var(--color-navy); 
+            margin-top: 16px; 
+            font-weight: 500; 
+            opacity: 0.5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(15, 23, 42, 0.1);
+            padding-top: 16px;
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- Insight Card: 색상 반전으로 Magazine의 Highlight 섹션 같은 느낌 -->
+        <div class="card insight">
+            <div class="label">
+                Editorial Insight
+                <div class="live-dot" style="background:#fff;"></div>
+            </div>
+            <div class="insight-text">
+                <span class="highlight">MODERN GRID</span> <br><br>
+                장식적인 요소를 제거하고 본질적인 데이터에 집중했습니다. 
+                <span style="border-bottom: 1px solid #fff;">코발트 블루</span>는 명확한 이정표 역할을 수행합니다.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">Total Assets</div>
+            <div class="value">842.4k</div>
+            <div class="trend-badge">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 15L12 9 6 15"/></svg>
+                14.5% INCREASE
+            </div>
+            <div class="sub-text">Asset Turnover</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Active Members</div>
+            <div class="value">3,291</div>
+            <div class="sub-text">
+                Global Real-time Status
+            </div>
+        </div>
+
+        <div class="card ring">
+            <div class="ring-center">
+                <div class="ring-num">89%</div>
+                <div style="font-size:9px; color:var(--color-navy); text-transform:uppercase; margin-top:4px; font-weight:700;">Optimal</div>
+            </div>
+            <svg class="ring-svg" viewBox="0 0 100 100">
+                <circle class="ring-track" cx="50" cy="50" r="46"></circle>
+                <circle class="ring-fill" cx="50" cy="50" r="46"></circle>
+            </svg>
+        </div>
+
+        <div class="card bar-chart">
+            <div class="label">Traffic Depth</div>
+            <div class="bars">
+                <div class="bar-wrap"><div class="bar" style="height:30%"></div><div class="bar-lbl">M</div></div>
+                <div class="bar-wrap"><div class="bar active" style="height:50%"></div><div class="bar-lbl">T</div></div>
+                <div class="bar-wrap"><div class="bar active" style="height:70%"></div><div class="bar-lbl">W</div></div>
+                <div class="bar-wrap"><div class="bar peak" style="height:95%"></div><div class="bar-lbl" style="color:var(--color-cobalt);">T</div></div>
+                <div class="bar-wrap"><div class="bar active" style="height:60%"></div><div class="bar-lbl">F</div></div>
+                <div class="bar-wrap"><div class="bar" style="height:25%"></div><div class="bar-lbl">S</div></div>
+                <div class="bar-wrap"><div class="bar" style="height:40%"></div><div class="bar-lbl">S</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">System Load</div>
+            <div class="value" style="font-size:42px;">Stable</div>
+            <div class="sub-text" style="color:var(--color-cobalt); opacity:1;">
+                ● No Issues Found
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
