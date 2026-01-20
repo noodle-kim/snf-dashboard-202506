@@ -1315,13 +1315,12 @@
                     <p class="text-[#94A3B8] mb-8">2026년 2월 SNF를 위한 완벽 준비 가이드</p>
 
                     <!-- 2026 Success Checklist - 최상단 배치 -->
-                    <div class="bg-[#FFFFFF] p-6 rounded-xl border border-[#E2E8F0] mb-8">
-                        <h3 class="text-2xl font-bold mb-3 text-[#1E293B] flex items-center gap-2">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-8">
+                        <h4 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
                             <span>🎯</span> 2026년 2월 SNF 성공 체크리스트
-                        </h3>
-                        <p class="text-sm text-[#64748B] mb-6">이 조건들을 충족하면 SNF 성공 확률이 크게 높아집니다</p>
+                        </h4>
                         
-                        <div id="report-checklist-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div id="report-checklist-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <!-- 체크리스트는 JavaScript에서 동적으로 로드됩니다 -->
                         </div>
                     </div>
@@ -3315,7 +3314,7 @@
         // 04_report 섹션 업데이트 함수들
         // ========================================
         
-        // Report 체크리스트 업데이트
+        // Report 체크리스트 업데이트 (성공 전략 스타일 - 컴팩트)
         function updateReportChecklist(data) {
             if (!data || data.length === 0) return;
             
@@ -3325,21 +3324,12 @@
             container.innerHTML = data.map(row => {
                 const items = row.detail_items ? row.detail_items.split('|') : [];
                 return `
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="text-2xl">${row.icon}</span>
-                            <div>
-                                <h4 class="text-lg font-bold text-slate-800">${row.title}</h4>
-                                <p class="text-sm text-slate-500">${row.description}</p>
-                            </div>
-                        </div>
-                        <ul class="space-y-2">
-                            ${items.map(item => `
-                                <li class="flex items-center gap-2 text-slate-600">
-                                    <span class="text-emerald-500">✓</span>
-                                    <span>${item}</span>
-                                </li>
-                            `).join('')}
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h5 class="font-bold text-[#003380] mb-2 flex items-center gap-2">
+                            <span>${row.icon}</span> ${row.title}
+                        </h5>
+                        <ul class="text-sm text-slate-500 space-y-1">
+                            ${items.map(item => `<li>• ${item}</li>`).join('')}
                         </ul>
                     </div>
                 `;
