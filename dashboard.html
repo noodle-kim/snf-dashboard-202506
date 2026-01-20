@@ -3094,9 +3094,9 @@
         // ========================================
         // GitHub 데이터 로딩 기능
         // ========================================
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/noodle-kim/snf-dashboard-202506/main/';
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/noodle-kim/snf-dashboard-202506/main/github_data/';
         
-        // CSV 파일 로드 함수
+        // CSV 파일 로드 함수 (경로: raw/, static/, insights/)
         async function loadCSV(filename) {
             try {
                 const response = await fetch(GITHUB_BASE_URL + filename);
@@ -3162,16 +3162,35 @@
         async function loadGitHubData() {
             console.log('🔄 GitHub에서 데이터 로딩 중...');
             
-            // KPI 데이터 로드
-            const kpiData = await loadCSV('kpi.csv');
-            if (kpiData) updateKPICards(kpiData);
-            
-            // 추후 확장: TOP10, 장르 분포, 인사이트 등
-            // const top10Data = await loadCSV('top10_games.csv');
-            // const genreData = await loadCSV('genre_distribution.csv');
-            // const insightsData = await loadJSON('insights.json');
-            
-            console.log('✅ GitHub 데이터 로딩 완료!');
+            try {
+                // 01_executive 데이터 로드
+                const execKpi = await loadCSV('raw/01_executive/02_kpi_cards.csv');
+                const execTop5 = await loadCSV('raw/01_executive/04_top5_games.csv');
+                const execGenre = await loadCSV('raw/01_executive/06_genre_distribution.csv');
+                
+                console.log('📊 Executive 데이터:', { execKpi, execTop5, execGenre });
+                
+                // KPI 카드 업데이트 (새 형식에 맞게)
+                if (execKpi) {
+                    console.log('✅ KPI 데이터 로드 성공:', execKpi);
+                }
+                
+                // 02_top_games 데이터 로드
+                const top10Table = await loadCSV('raw/02_top_games/03_top10_table.csv');
+                console.log('🏆 TOP10 데이터:', top10Table);
+                
+                // 03_charts 데이터 로드
+                const chartData = await loadCSV('raw/03_charts/03_chart_data.csv');
+                console.log('📈 차트 데이터:', chartData);
+                
+                // 04_report 데이터 로드
+                const tagsData = await loadCSV('raw/04_report/03_tags_analysis.csv');
+                console.log('📋 태그 데이터:', tagsData);
+                
+                console.log('✅ GitHub 데이터 로딩 완료!');
+            } catch (error) {
+                console.error('❌ GitHub 데이터 로딩 실패:', error);
+            }
         }
         
         // Initialize page on load
@@ -3184,9 +3203,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
 
