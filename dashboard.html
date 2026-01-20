@@ -930,32 +930,20 @@
                             </h3>
                             <div id="charts-findings-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <!-- dashboard_blue.html 스타일 기본값 (JavaScript에서 동적으로 업데이트) -->
-                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#0047AB]">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xl">🎯</span>
-                                        <h4 class="font-semibold text-[#0047AB]">상위 3개 게임이 주도</h4>
-                                    </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h4 class="font-bold text-[#0047AB] mb-2">상위 3개 게임이 주도</h4>
                                     <p class="text-sm text-[#64748B] leading-relaxed">빈딕투스, 나혼자레벨업, Jump Ship 3개 게임이 전체 차트 노출의 25%를 차지했습니다.</p>
                                 </div>
-                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#3B82F6]">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xl">🔥</span>
-                                        <h4 class="font-semibold text-[#3B82F6]">체험판이 가장 효과적</h4>
-                                    </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h4 class="font-bold text-[#0047AB] mb-2">체험판이 가장 효과적</h4>
                                     <p class="text-sm text-[#64748B] leading-relaxed">인기 체험판 차트가 전체 노출의 40%를 차지해, 가장 효과적인 홍보 채널로 확인됐습니다.</p>
                                 </div>
-                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#F59E0B]">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xl">👑</span>
-                                        <h4 class="font-semibold text-[#F59E0B]">10회 이상 진입 = 성공</h4>
-                                    </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h4 class="font-bold text-[#0047AB] mb-2">10회 이상 진입 = 성공</h4>
                                     <p class="text-sm text-[#64748B] leading-relaxed">10회 이상 차트에 오른 게임은 4개뿐입니다. 이 기준을 달성하면 '성공적인 SNF'라고 볼 수 있습니다.</p>
                                 </div>
-                                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4 border-[#8B5CF6]">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xl">🚀</span>
-                                        <h4 class="font-semibold text-[#8B5CF6]">3종 차트 동시 공략이 핵심</h4>
-                                    </div>
+                                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                                    <h4 class="font-bold text-[#0047AB] mb-2">3종 차트 동시 공략이 핵심</h4>
                                     <p class="text-sm text-[#64748B] leading-relaxed">세 종류의 차트에 모두 진입한 게임들이 평균 10회 이상 노출되며 높은 성과를 기록했습니다.</p>
                                 </div>
                             </div>
@@ -3060,7 +3048,7 @@
             console.log('✅ TOP Games KPI 업데이트 완료');
         }
         
-        // TOP Games Key Findings 업데이트 (dashboard_blue.html 스타일)
+        // TOP Games Key Findings 업데이트 (dashboard_blue.html 스타일 - 아이콘 없음)
         function updateTopGamesFindings(data) {
             if (!data || data.length === 0) return;
             
@@ -3068,11 +3056,8 @@
             if (!container) return;
             
             container.innerHTML = data.map(row => `
-                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4" style="border-color: ${row.border_color || '#0047AB'}">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xl">${row.icon}</span>
-                        <h4 class="font-semibold" style="color: ${row.border_color || '#0047AB'}">${row.title}</h4>
-                    </div>
+                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                    <h4 class="font-bold text-[#0047AB] mb-2">${row.title}</h4>
                     <p class="text-sm text-[#64748B] leading-relaxed">${row.description}</p>
                 </div>
             `).join('');
@@ -3255,7 +3240,7 @@
             console.log('✅ Charts KPI 업데이트 완료');
         }
         
-        // Charts Key Findings 업데이트 (dashboard_blue.html 스타일)
+        // Charts Key Findings 업데이트 (dashboard_blue.html 스타일 - 아이콘 없음)
         function updateChartsFindings(data) {
             if (!data || data.length === 0) return;
             
@@ -3263,11 +3248,8 @@
             if (!container) return;
             
             container.innerHTML = data.map(row => `
-                <div class="bg-[#F8FAFC] p-4 rounded-xl border-l-4" style="border-color: ${row.color || '#0047AB'}">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xl">${row.icon}</span>
-                        <h4 class="font-semibold" style="color: ${row.color || '#0047AB'}">${row.title}</h4>
-                    </div>
+                <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                    <h4 class="font-bold text-[#0047AB] mb-2">${row.title}</h4>
                     <p class="text-sm text-[#64748B] leading-relaxed">${row.description}</p>
                 </div>
             `).join('');
