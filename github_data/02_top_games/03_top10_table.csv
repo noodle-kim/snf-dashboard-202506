@@ -1,11 +1,11 @@
-﻿rank,name,genre,review_status,review_count,wishlist_before,wishlist_after,wishlist_increase,wishlist_percent,top_language
+rank,name,genre,review_status,review_count,wishlist_before,wishlist_after,wishlist_increase,wishlist_percent,top_language
 1,빈딕투스: 디파잉 페이트,액션 RPG,복합적,5200,592569,744174,151605,+25.6%,간체 중국어
 2,와일드 게이트,슈팅,확인불가,1811,296446,356172,59726,+20.1%,간체 중국어
 3,Jump Ship,슈팅,매우 긍정적,3297,891839,981554,89715,+10.1%,간체 중국어
-4,MIMESIS,공포,확인불가,0,124569,178394,53825,+43.2%,
+4,MIMESIS,공포,확인불가,-,124569,178394,53825,+43.2%,-
 5,Zoochosis,액션,압도적 긍정,2207,273244,345177,71933,+26.3%,러시아어
-6,나 혼자만 레벨업: 어라이즈,액션 RPG,확인불가,0,516086,589015,72929,+14.1%,
+6,나 혼자만 레벨업: 어라이즈,액션 RPG,확인불가,-,516086,589015,72929,+14.1%,-
 7,PIONER,MMORPG,확인불가,336,283902,366792,82890,+29.2%,러시아어
 8,Holstin,공포,압도적 긍정,1197,412647,502928,90281,+21.9%,간체 중국어
-9,UFL,스포츠,확인불가,0,234225,254707,20482,+8.7%,
-10,Starlight ReVolver,로그라이크,확인불가,0,94879,108088,13209,+13.9%,
+9,UFL,스포츠,확인불가,-,234225,254707,20482,+8.7%,-
+10,Starlight ReVolver,로그라이크,확인불가,-,94879,108088,13209,+13.9%,-
