@@ -1,9 +1,9 @@
 ﻿chart_type,stat_type,label,value,percentage
-인기 체험판,count,총 노출 횟수,26,33%
-인기 출시 예정 게임,count,총 노출 횟수,26,33%
-떠오르는 출시 예정 게임,count,총 노출 횟수,27,34%
-top_games,Jump Ship,차트인 횟수,14,18%
-top_games,빈딕투스: 디파잉 페이트,차트인 횟수,12,15%
-top_games,나 혼자만 레벨업:어라이즈 오버드라이브,차트인 횟수,10,13%
-top_games,와일드 게이트,차트인 횟수,8,10%
-top_games,Anvil Empires,차트인 횟수,7,9%
+인기 체험판,count,총 노출 횟수,50,33%
+인기 출시 예정 게임,count,총 노출 횟수,50,33%
+떠오르는 출시 예정 게임,count,총 노출 횟수,50,33%
+top_games,Jump Ship,차트인 횟수,14,9%
+top_games,빈딕투스: 디파잉 페이트,차트인 횟수,12,8%
+top_games,나 혼자만 레벨업:어라이즈 오버드라이브,차트인 횟수,10,7%
+top_games,와일드 게이트,차트인 횟수,8,5%
+top_games,Anvil Empires,차트인 횟수,7,5%
