@@ -330,8 +330,8 @@
     </button>
 
     <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="sidebar w-80 p-6 flex flex-col">
+        <!-- Sidebar (Fixed) -->
+        <aside class="sidebar w-80 p-6 flex flex-col sticky top-0 h-screen overflow-y-auto">
             <div class="mb-8">
                 <h1 class="text-2xl font-bold text-slate-800 mb-2">🎮 Steam Next Fest</h1>
                 <p class="text-sm text-slate-500">2026년 2월 분석 대시보드</p>
@@ -362,9 +362,21 @@
                 </ul>
             </nav>
             
-            <div class="mt-8 pt-6 border-t border-slate-200">
+            <!-- Footer Banner (KPI Card Style) -->
+            <div class="mt-8">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-400 transition-all shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[#0047AB] text-xl">🏢</span>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-lg font-semibold">v2.0</span>
+                    </div>
+                    <p class="text-lg font-bold text-slate-800 mb-1">ER사업2팀</p>
+                    <p class="text-xs text-slate-500">© 2026 All rights reserved</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
                 <p class="text-xs text-slate-400">데이터 기준: 2025년 6월 SNF</p>
-                <p class="text-xs text-slate-400 mt-1">업데이트: 2026.01.16</p>
+                <p id="last-load-time" class="text-xs text-slate-400 mt-1">마지막 로드: -</p>
             </div>
         </aside>
 
@@ -3383,7 +3395,7 @@
                 console.log('✅ 모든 GitHub 데이터 로딩 완료! (25개 CSV)');
                 
                 // 업데이트 시간 표시
-                const updateTimeEl = document.querySelector('.sidebar p.text-xs:last-child');
+                const updateTimeEl = document.getElementById('last-load-time');
                 if (updateTimeEl) {
                     const now = new Date();
                     updateTimeEl.textContent = `마지막 로드: ${now.toLocaleTimeString('ko-KR')}`;
