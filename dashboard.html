@@ -704,30 +704,30 @@
                         </div>
 
                         <div id="top50-summary-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                            <!-- TOP 50 Summary Cards는 JavaScript에서 동적으로 로드됩니다 -->
+                            <!-- TOP 50 Summary Cards는 CSV(04_top50_summary.csv)에서 동적으로 로드됩니다 -->
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">🎮</span>
-                                    <h4 id="top50-summary-title-0" class="font-semibold text-[#0047AB]">체험판 접속 가능</h4>
+                                    <h4 id="top50-summary-title-0" class="font-semibold text-[#0047AB]">로딩 중...</h4>
                                 </div>
-                                <p id="top50-summary-value-0" class="text-[28px] font-bold text-[#1E293B] mb-1">29개</p>
-                                <p id="top50-summary-desc-0" class="text-sm text-[#64748B]">TOP 50 중 58%</p>
+                                <p id="top50-summary-value-0" class="text-[28px] font-bold text-[#1E293B] mb-1">-</p>
+                                <p id="top50-summary-desc-0" class="text-sm text-[#64748B]">-</p>
                             </div>
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">👥</span>
-                                    <h4 id="top50-summary-title-1" class="font-semibold text-[#3B82F6]">멀티플레이</h4>
+                                    <h4 id="top50-summary-title-1" class="font-semibold text-[#3B82F6]">로딩 중...</h4>
                                 </div>
-                                <p id="top50-summary-value-1" class="text-[28px] font-bold text-[#1E293B] mb-1">27개</p>
-                                <p id="top50-summary-desc-1" class="text-sm text-[#64748B]">54% (싱글 23개)</p>
+                                <p id="top50-summary-value-1" class="text-[28px] font-bold text-[#1E293B] mb-1">-</p>
+                                <p id="top50-summary-desc-1" class="text-sm text-[#64748B]">-</p>
                             </div>
                             <div class="bg-[#FFFFFF] p-4 rounded-xl border border-[#E2E8F0]">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-2xl">🎯</span>
-                                    <h4 id="top50-summary-title-2" class="font-semibold text-[#8B5CF6]">최다 장르</h4>
+                                    <h4 id="top50-summary-title-2" class="font-semibold text-[#8B5CF6]">로딩 중...</h4>
                                 </div>
-                                <p id="top50-summary-value-2" class="text-[28px] font-bold text-[#1E293B] mb-1">로그라이크</p>
-                                <p id="top50-summary-desc-2" class="text-sm text-[#64748B]">14개 게임 (28%)</p>
+                                <p id="top50-summary-value-2" class="text-[28px] font-bold text-[#1E293B] mb-1">-</p>
+                                <p id="top50-summary-desc-2" class="text-sm text-[#64748B]">-</p>
                             </div>
                         </div>
 
@@ -933,7 +933,7 @@
                             <div id="chart-insight-demo" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    <span id="chart-insight-demo-content">체험판 차트는 가장 안정적입니다. 상위권 게임들이 5일 내내 꾸준히 순위를 유지했어요. 빈딕투스와 나혼자레벨업 같은 한국 게임이 강세를 보였고, 중국 퍼블리셔 bilibili도 적극 참여했습니다.</span>
+                                    <span id="chart-insight-demo-content">데이터 로딩 중...</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -966,46 +966,10 @@
                                             <th class="text-center">5일 연속</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="demo-tbody">
+                                        <!-- 데이터는 CSV(05_demo_chart.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td class="font-semibold">빈딕투스: 디파잉 페이트</td>
-                                            <td class="text-sm">NEXON</td>
-                                            <td class="text-sm">NEXON</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center text-[#0047AB]">1위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">PIONER</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center">2위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">Escape from Duckov</td>
-                                            <td class="text-sm">Team Soda</td>
-                                            <td class="text-sm">bilibili</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center">3위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">나 혼자만 레벨업</td>
-                                            <td class="text-sm">Netmarble Neo</td>
-                                            <td class="text-sm">Netmarble</td>
-                                            <td class="text-center font-bold text-[#0047AB]">2</td>
-                                            <td class="text-center">8위</td>
-                                            <td class="text-center"><span class="badge badge-neutral">-</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">MIMESIS</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center">4위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1019,7 +983,7 @@
                             <div id="chart-insight-popular" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    <span id="chart-insight-popular-content">대형 타이틀들의 격전지입니다. 빈딕투스와 나혼자레벨업이 1~2위를 두고 치열하게 경쟁했어요. Nacon 같은 서양 퍼블리셔와 한국 퍼블리셔가 맞붙는 흥미로운 구도가 펼쳐졌습니다.</span>
+                                    <span id="chart-insight-popular-content">데이터 로딩 중...</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -1052,46 +1016,10 @@
                                             <th class="text-center">5일 연속</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="popular-upcoming-tbody">
+                                        <!-- 데이터는 CSV(06_popular_upcoming.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td class="font-semibold">빈딕투스: 디파잉 페이트</td>
-                                            <td class="text-sm">NEXON</td>
-                                            <td class="text-sm">NEXON</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center text-[#0047AB]">1위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">나 혼자만 레벨업</td>
-                                            <td class="text-sm">Netmarble Neo</td>
-                                            <td class="text-sm">Netmarble</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center text-[#0047AB]">1~2위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">Hell is Us</td>
-                                            <td class="text-sm">Nacon</td>
-                                            <td class="text-sm">Nacon</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center">3위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">Dead Rising</td>
-                                            <td class="text-sm">Ramjet Studios</td>
-                                            <td class="text-sm">Ramjet Studios</td>
-                                            <td class="text-center font-bold text-[#0047AB]">4</td>
-                                            <td class="text-center">4위</td>
-                                            <td class="text-center"><span class="badge badge-neutral">-</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">PIONER</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center">3~5위</td>
-                                            <td class="text-center"><span class="badge badge-positive">✓</span></td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1105,7 +1033,7 @@
                             <div id="chart-insight-trending" class="insight-box mb-6">
                                 <p class="text-sm text-[#64748B]">
                                     <strong class="text-[#0047AB]">💡 이 차트의 특징:</strong> 
-                                    <span id="chart-insight-trending-content">가장 변화가 빠른 차트입니다. 매일 1위가 바뀔 정도로 역동적이에요. Moonlighter 2처럼 인디 게임도 1위에 오를 수 있어서, 바이럴 마케팅의 효과가 가장 큰 차트입니다.</span>
+                                    <span id="chart-insight-trending-content">데이터 로딩 중...</span>
                                 </p>
                             </div>
                             <div class="table-wrapper border border-[#E2E8F0] rounded-xl overflow-hidden w-fit">
@@ -1138,46 +1066,10 @@
                                             <th class="text-center">특징</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="trending-upcoming-tbody">
+                                        <!-- 데이터는 CSV(07_trending_upcoming.csv)에서 동적으로 로드됩니다 -->
                                         <tr>
-                                            <td class="font-semibold">Moonlighter 2</td>
-                                            <td class="text-sm">Digital Sun</td>
-                                            <td class="text-sm">11 bit studios</td>
-                                            <td class="text-center font-bold text-[#0047AB]">5</td>
-                                            <td class="text-center text-[#0047AB]">1위</td>
-                                            <td class="text-center"><span class="badge badge-positive">안정</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">나 혼자만 레벨업</td>
-                                            <td class="text-sm">Netmarble Neo</td>
-                                            <td class="text-sm">Netmarble</td>
-                                            <td class="text-center font-bold text-[#0047AB]">4</td>
-                                            <td class="text-center text-[#0047AB]">1위</td>
-                                            <td class="text-center"><span class="badge badge-positive">상승</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">PIONER</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-sm">GFAGAMES</td>
-                                            <td class="text-center font-bold text-[#0047AB]">4</td>
-                                            <td class="text-center">3위</td>
-                                            <td class="text-center"><span class="badge badge-positive">안정</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">Jump Ship</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-center font-bold text-[#0047AB]">4</td>
-                                            <td class="text-center text-[#0047AB]">1위</td>
-                                            <td class="text-center"><span class="badge badge-neutral">변동</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-semibold">Date Everything</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-sm">Unknown</td>
-                                            <td class="text-center font-bold text-[#0047AB]">2</td>
-                                            <td class="text-center">2~3위</td>
-                                            <td class="text-center"><span class="badge badge-neutral">급상승</span></td>
+                                            <td colspan="6" class="text-center text-[#94A3B8] py-4">데이터 로딩 중...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1341,7 +1233,7 @@
                         <div id="report-insight-languages" class="insight-box mb-6">
                             <p class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
-                                <span id="report-insight-languages-content">영어는 100% 필수이며, 중국어 간체 지원률이 92%로 압도적입니다. 음성 지원은 42%만 제공하지만, 인터페이스와 자막은 평균 7~8개 언어를 지원합니다.</span>
+                                <span id="report-insight-languages-content">데이터 로딩 중...</span>
                             </p>
                         </div>
 
@@ -1404,7 +1296,7 @@
                         <div id="report-insight-community" class="insight-box mb-6">
                             <p class="text-sm text-[#64748B]">
                                 <strong class="text-[#0047AB]">💡 핵심 발견:</strong> 
-                                <span id="report-insight-community-content">TOP 게임들은 평균 4.2개의 커뮤니티 채널을 운영합니다. Discord(90%), YouTube(85%), X(80%)가 필수 3종 세트이며, 주 2회 이상 업데이트하는 게임이 차트 상위권을 차지했습니다.</span>
+                                <span id="report-insight-community-content">데이터 로딩 중...</span>
                             </p>
                         </div>
 
