@@ -1,4 +1,0 @@
-﻿chart_id,chart_type,title,labels,values
-chart_type_dist,doughnut,차트 종류별 분포,인기 체험판|인기 출시 예정|떠오르는 출시 예정,40|35|25
-top_chart_games,bar,차트인 횟수 TOP 10,빈딕투스|와일드게이트|나혼자레벨업|Zoochosis|Jump Ship|Dead Rising|Wheel World|Anvil Empires|MIMESIS|PIONER,14|15|12|12|9|9|9|7|6|5
-daily_activity,line,일자별 차트 활동,Day1|Day2|Day3|Day4|Day5,45|52|48|55|50

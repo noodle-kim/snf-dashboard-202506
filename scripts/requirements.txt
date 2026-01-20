@@ -1,0 +1,8 @@
+# SNF Dashboard AI Insights Generator
+# 필요한 Python 패키지 목록
+
+# Google Gemini API (새 패키지)
+google-genai>=1.0.0
+
+# 기타 유틸리티 (이미 Python에 포함된 경우가 많음)
+# csv, json, pathlib - Python 내장 모듈
