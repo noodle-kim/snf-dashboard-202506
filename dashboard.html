@@ -1244,7 +1244,7 @@
                                     <canvas id="voiceChart"></canvas>
                                 </div>
                                 <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
-                                    <p class="text-xs text-[#0047AB] font-medium">TOP 10 중 <span class="text-[#0047AB] font-bold">42%</span>만 음성 제공</p>
+                                    <p id="voice-support-stat" class="text-xs text-[#0047AB] font-medium">데이터 로딩 중...</p>
                                 </div>
                             </div>
                             <div>
@@ -1253,7 +1253,7 @@
                                     <canvas id="interfaceChart"></canvas>
                                 </div>
                                 <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
-                                    <p class="text-xs text-[#0047AB] font-medium">평균 <span class="text-[#0047AB] font-bold">7.8개</span> 언어</p>
+                                    <p id="interface-lang-stat" class="text-xs text-[#0047AB] font-medium">데이터 로딩 중...</p>
                                 </div>
                             </div>
                             <div>
@@ -1262,7 +1262,7 @@
                                     <canvas id="subtitleChart"></canvas>
                                 </div>
                                 <div class="mt-3 py-2 px-3 bg-[#0047AB]/10 rounded-xl border border-[#E2E8F0] text-center">
-                                    <p class="text-xs text-[#0047AB] font-medium">평균 <span class="text-[#0047AB] font-bold">8.2개</span> 언어</p>
+                                    <p id="subtitle-lang-stat" class="text-xs text-[#0047AB] font-medium">데이터 로딩 중...</p>
                                 </div>
                             </div>
                         </div>
@@ -1270,22 +1270,16 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="bg-[#0047AB]/10 p-6 rounded-xl border border-[#E2E8F0]">
                                 <h4 class="font-bold text-[#0047AB] mb-3">✅ 필수 언어 5종</h4>
-                                <ul class="space-y-2 text-sm text-[#64748B]">
-                                    <li>• <span class="font-semibold text-[#1E293B]">영어</span> - 100% (글로벌 기본)</li>
-                                    <li>• <span class="font-semibold text-[#1E293B]">중국어 간체</span> - 92% (최대 시장)</li>
-                                    <li>• <span class="font-semibold text-[#1E293B]">한국어</span> - 70% (아시아 주요)</li>
-                                    <li>• <span class="font-semibold text-[#1E293B]">일본어</span> - 68% (AAA 필수)</li>
-                                    <li>• <span class="font-semibold text-[#1E293B]">중국어 번체</span> - 54% (대만/홍콩)</li>
+                                <ul id="essential-languages-list" class="space-y-2 text-sm text-[#64748B]">
+                                    <!-- CSV에서 동적 로드 -->
+                                    <li>데이터 로딩 중...</li>
                                 </ul>
                             </div>
                             <div class="bg-[#0047AB]/10 p-6 rounded-xl border border-[#E2E8F0]">
                                 <h4 class="font-bold text-[#0047AB] mb-3">💡 전략 포인트</h4>
-                                <ul class="space-y-2 text-sm text-[#64748B]">
-                                    <li>• 인디 게임: 최소 영어+중국어+한국어 (3개)</li>
-                                    <li>• AA급: 위 3개 + 일본어, 러시아어 추가 (5개)</li>
-                                    <li>• AAA급: 10개 이상 다국어 필수</li>
-                                    <li>• 유럽 공략 시: 스페인어, 프랑스어, 독일어</li>
-                                    <li>• 남미 공략 시: 포르투갈어(브라질) 필수</li>
+                                <ul id="language-strategy-list" class="space-y-2 text-sm text-[#64748B]">
+                                    <!-- CSV에서 동적 로드 -->
+                                    <li>데이터 로딩 중...</li>
                                 </ul>
                             </div>
                         </div>
@@ -3183,8 +3177,9 @@
             const container = document.getElementById('language-support-container');
             if (!container) return;
             
-            // interface만 필터링
+            // interface만 필터링 (상위 5개 = 필수 언어)
             const interfaceLangs = data.filter(row => row.support_type === 'interface');
+            const essentialLangs = interfaceLangs.slice(0, 5);
             
             container.innerHTML = interfaceLangs.map(row => `
                 <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
@@ -3195,7 +3190,42 @@
                     <span class="text-[#0047AB] font-semibold">${row.percentage}</span>
                 </div>
             `).join('');
-            console.log('✅ 언어 지원 업데이트 완료');
+            
+            // 필수 언어 5종 목록 업데이트
+            const essentialList = document.getElementById('essential-languages-list');
+            if (essentialList) {
+                essentialList.innerHTML = essentialLangs.map(row => `
+                    <li>• <span class="font-semibold text-[#1E293B]">${row.language}</span> - ${row.percentage} (${row.note || ''})</li>
+                `).join('');
+            }
+            
+            // 전략 포인트 업데이트
+            const strategyList = document.getElementById('language-strategy-list');
+            const strategies = data.filter(row => row.support_type === 'strategy');
+            if (strategyList && strategies.length > 0) {
+                strategyList.innerHTML = strategies.map(row => `
+                    <li>• ${row.rank}: ${row.language} (${row.game_count}개)${row.note ? ' - ' + row.note : ''}</li>
+                `).join('');
+            }
+            
+            // 요약 통계 업데이트
+            const summaries = data.filter(row => row.support_type === 'summary');
+            summaries.forEach(row => {
+                if (row.rank === 'voice') {
+                    const voiceStat = document.getElementById('voice-support-stat');
+                    if (voiceStat) voiceStat.innerHTML = `TOP 10 중 <span class="text-[#0047AB] font-bold">${row.percentage}</span>만 음성 제공`;
+                }
+                if (row.rank === 'interface_avg') {
+                    const interfaceStat = document.getElementById('interface-lang-stat');
+                    if (interfaceStat) interfaceStat.innerHTML = `평균 <span class="text-[#0047AB] font-bold">${row.percentage}</span> 언어`;
+                }
+                if (row.rank === 'subtitle_avg') {
+                    const subtitleStat = document.getElementById('subtitle-lang-stat');
+                    if (subtitleStat) subtitleStat.innerHTML = `평균 <span class="text-[#0047AB] font-bold">${row.percentage}</span> 언어`;
+                }
+            });
+            
+            console.log('✅ 언어 지원 업데이트 완료 (필수 언어, 전략 포인트, 요약 통계 포함)');
         }
         
         // 커뮤니티 업데이트
