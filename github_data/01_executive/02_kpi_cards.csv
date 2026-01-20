@@ -1,5 +1,5 @@
-﻿id,label,value,subtext,icon,color
-total_games,총 분석 게임,50,TOP50 기준,🎮,#0047AB
-korean_games,한국 게임사,0,개 진출,🇰🇷,#10B981
-top_genre,1위 장르,로그라이크,14%,⚔️,#8B5CF6
-avg_rating,평균 리뷰,확인 불가,TOP10 기준,⭐,#F59E0B
+﻿id,icon,value,label,sublabel,color
+1,📊,15개,차트 진입 게임,SNF 기간 중,#0047AB
+2,🏆,+726,489,총 찜 수 증가,TOP 10 합계 (스텔라 블레이드 제외)
+3,🎮,70%,멀티플레이 비율,TOP 10 기준,#8B5CF6
+4,📈,50%,체험판 제공율,TOP 10 기준,#F59E0B

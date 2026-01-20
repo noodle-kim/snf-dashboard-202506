@@ -1,0 +1,21 @@
+﻿chart_type,label,value,color,percentage
+genre_dist,로그라이크,9,#003380,18%
+genre_dist,슈팅,7,#0047AB,14%
+genre_dist,액션 어드벤처,5,#3B82F6,10%
+genre_dist,시뮬레이션,7,#60A5FA,14%
+genre_dist,공포,5,#93C5FD,10%
+genre_dist,액션,3,#007BFF,6%
+genre_dist,액션 RPG,2,#17A2B8,4%
+genre_dist,MMORPG,2,#28A745,4%
+genre_dist,전략,1,#DC3545,2%
+genre_dist,스포츠,1,#FFC107,2%
+genre_dist,레이싱,1,#E83E8C,2%
+genre_dist,로그라이트,1,#20C997,2%
+genre_dist,생존,2,#FD7E14,4%
+genre_dist,연예 시뮬레이션,1,#6F42C1,2%
+genre_dist,성인,1,#6C757D,2%
+genre_dist,전략 RPG,1,#000000,2%
+play_type,멀티플레이,21,#0047AB,42%
+play_type,싱글 플레이,29,#60A5FA,58%
+demo_avail,체험판 제공,27,#0047AB,54%
+demo_avail,체험판 없음,23,#94A3B8,46%

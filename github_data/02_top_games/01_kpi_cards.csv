@@ -1,5 +1,3 @@
-﻿id,label,value,subtext,icon,color
-top1_wishlists,1위 찜 수,744K,+151K (592K -> 744K),🏆,#FFD700
-multi_ratio,멀티플레이,70%,TOP10,👥,#0047AB
-top_genre,최다 장르,로그라이크,7개 (TOP29),⚔️,#10B981
-korean_rank,한국 게임,1위,액션 RPG,🇰🇷,#E11D48
+﻿id,icon,value,label,sublabel,highlight
+1,📈,+716,572 찜,SNF 기간 총 찜 수 증가,TOP 10 합계
+2,🚀,+227,235 찜,1위 게임 성과,+15.2% 증가

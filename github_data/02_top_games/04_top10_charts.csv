@@ -1,0 +1,14 @@
+﻿chart_type,label,value,color
+wishlist_top5,Project DW,90281,#0047AB
+wishlist_top5,Starlight ReVolver,13209,#3B82F6
+wishlist_top5,MIMESIS,53825,#0047AB
+wishlist_top5,PIONER,82890,#8B5CF6
+wishlist_top5,별 헤는 밤,89715,#0047AB
+review_dist,압도적 긍정,2,#003380
+review_dist,매우 긍정적,2,#0047AB
+review_dist,복합적,1,#60A5FA
+review_dist,확인불가,6,#94A3B8
+genre_dist,액션,3,#003380
+genre_dist,RPG,3,#0047AB
+genre_dist,슈팅,1,#3B82F6
+genre_dist,기타,4,#94A3B8

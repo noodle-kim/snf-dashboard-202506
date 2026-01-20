@@ -1,6 +1,11 @@
+# API 키 보호 (중요!)
+.env
+scripts/.env
+
 # 백업 파일들
 github_data_backup/
 *_backup*.html
+*_backup*.py
 
 # 원본 Notion CSV (한글 파일명)
 *.pdf

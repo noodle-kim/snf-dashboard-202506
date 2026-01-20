@@ -1,0 +1,11 @@
+﻿support_type,rank,language,game_count,percentage,priority
+interface,1,영어,50,100%,필수
+interface,2,중국어 간체,46,92%,필수
+interface,3,한국어,35,70%,권장
+interface,4,일본어,34,68%,권장
+interface,5,중국어 번체,27,54%,권장
+interface,6,러시아어,28,56%,선택
+interface,7,프랑스어,26,52%,선택
+strategy,인디,영어+중국어+한국어,3,,
+strategy,AA급,영어+중국어+한국어+일본어+러시아어,5,,
+strategy,AAA급,10개 이상 다국어,10,,

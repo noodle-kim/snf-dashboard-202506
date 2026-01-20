@@ -1,0 +1,13 @@
+﻿analysis_type,platform,usage_rate,priority,region_target
+channel_usage,Discord,90%,필수,글로벌
+channel_usage,X,85%,필수,글로벌/일본
+channel_usage,YouTube,80%,필수,글로벌
+channel_usage,TikTok,60%,권장,글로벌
+channel_usage,홈페이지,50%,권장,글로벌
+channel_usage,Twitch,70%,필수,글로벌
+region_strategy,글로벌,Discord|YouTube|X|TikTok|Twitch|홈페이지,,
+region_strategy,한국,Discord|YouTube|홈페이지,,
+region_strategy,일본,Discord|YouTube|X,,
+timeline,준비단계,Discord 서버 오픈|YouTube 채널 생성|X 계정 활동|홈페이지 오픈,알파 테스트 3개월 전,
+timeline,실행단계,실시간 스트리밍 방송|패치노트|피드백 수집|챌린지 이벤트,알파/오픈베타 테스트 기간 중,
+timeline,정리단계,설문조사|당첨자 발표|지속적 소통|출시일 발표,테스트 종료 후,
