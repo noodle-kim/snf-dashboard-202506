@@ -1,18 +1,39 @@
-# 🏆 TOP 게임 분석 - AI 인사이트 프롬프트
+# 🏆 TOP 게임 분석 - AI 인사이트 프롬프트 v2.1
 
 ## 📋 개요
 이 프롬프트는 대시보드의 **두 번째 페이지 "TOP 게임 분석"**에 표시될 AI 인사이트를 생성합니다.
 
 ---
 
+## ⚠️ 중요: CSV 포맷 규칙
+
+### 필수 준수 사항
+1. **숫자에 쉼표 금지**: `716572` (O) / `716,572` (X)
+2. **큰 숫자는 K/M 단위 사용**: `+70.7K`, `+151K`
+3. **퍼센트는 % 포함**: `50%`, `+25.6%`
+4. **파이프(|) 구분자**: 여러 항목은 파이프로 구분
+5. **빈 값은 빈 문자열**: `,,` (O) / `,null,` (X)
+
+### 금지 사항
+- 셀 내 쉼표 사용 (CSV 파싱 오류 유발)
+- value 필드에 쉼표 포함 금지 (`+716,572` → `+716K`)
+
+---
+
 ## 🎯 생성 목표
-TOP 10 / TOP 50 게임 데이터를 분석하여 **6개의 CSV 파일**을 생성합니다:
-1. `01_kpi_cards.csv` - TOP 게임 핵심 KPI 2개
-2. `02_key_findings.csv` - 핵심 성과 요약 4개
-3. `03_top10_table.csv` - TOP 10 게임 상세 테이블
-4. `04_top10_charts.csv` - TOP 10 차트 데이터 (찜 수, 리뷰, 장르)
-5. `05_top50_table.csv` - TOP 50 게임 테이블
-6. `06_top50_charts.csv` - TOP 50 차트 데이터 (장르, 멀티/싱글, 체험판)
+
+| # | 파일명 | 용도 | 동적화 |
+|---|--------|------|--------|
+| 1 | `01_kpi_cards.csv` | TOP 게임 핵심 KPI 2개 | ✅ |
+| 2 | `02_key_findings.csv` | 핵심 성과 요약 4개 | ✅ |
+| 3 | `03_top10_insight.csv` | TOP 10 탭 insight-box 텍스트 | ✅ **신규** |
+| 4 | `03_top10_table.csv` | TOP 10 게임 상세 테이블 | ✅ |
+| 5 | `04_top50_insight.csv` | TOP 50 탭 insight-box 텍스트 | ✅ **신규** |
+| 6 | `05_top50_summary.csv` | TOP 50 요약 카드 3개 | ✅ **신규** |
+| 7 | `05_top50_table.csv` | TOP 50 게임 테이블 | ✅ |
+
+### 🔒 유지 영역 (동적화 하지 않음)
+- Chart.js 차트 데이터 (v2.2에서 처리 예정)
 
 ---
 
@@ -20,212 +41,203 @@ TOP 10 / TOP 50 게임 데이터를 분석하여 **6개의 CSV 파일**을 생�
 
 | 파일명 | 내용 | 활용 |
 |--------|------|------|
-| `TOP10 게임 종합 평가*.csv` | 순위, 리뷰, 찜 수, 유저 국적 | TOP 10 분석, KPI |
-| `가장 많이 플레이한 TOP50*.csv` | 장르, 체험판, 멀티플레이, 출시일 | TOP 50 분석, 트렌드 |
+| `TOP10 게임 종합 평가*.csv` | 순위/리뷰/찜 수/유저 국적 | TOP 10 분석/KPI |
+| `가장 많이 플레이한 TOP50*.csv` | 장르/체험판/멀티플레이/출시일 | TOP 50 분석/트렌드 |
 
 ---
 
-## 📝 프롬프트 1: KPI 카드 (01_kpi_cards.csv)
+## 📝 CSV 1: KPI 카드 (01_kpi_cards.csv)
 
-```
-TOP10 게임 종합 평가 데이터에서 **핵심 KPI 2개**를 추출해주세요.
-
-### 출력 형식 (CSV):
-id,icon,value,label,sublabel,highlight
-1,📈,{값},{지표명},{부가설명},{강조할 게임명}
-2,🚀,{값},{지표명},{부가설명},{강조할 게임명}
-
-### 필수 KPI:
-1. TOP 10 총 찜 수 증가량 (예: +70만 찜)
-2. 1위 게임의 찜 수 증가량 (예: +15만 찜, 빈딕투스)
-
-### 계산 방법:
-- 찜 증가량 = 참여 후 찜 수 - 참여 전 찜 수
-- 증가율 = (찜 증가량 / 참여 전 찜 수) × 100
-```
-
----
-
-## 📝 프롬프트 2: 핵심 성과 요약 (02_key_findings.csv)
-
-```
-TOP 10 및 TOP 50 게임 데이터를 분석하여 **핵심 성과 요약 4개**를 도출해주세요.
-
-### 출력 형식 (CSV):
-id,icon,title,description,border_color
-1,🎮,{제목},{50자 이상 상세 설명},#0047AB
-2,👥,{제목},{50자 이상 상세 설명},#3B82F6
-3,⭐,{제목},{50자 이상 상세 설명},#F59E0B
-4,🌏,{제목},{50자 이상 상세 설명},#8B5CF6
-
-### 분석 포인트:
-1. **체험판 제공 여부**와 성과의 상관관계
-2. **멀티플레이 vs 싱글플레이** 비율 및 성과 차이
-3. **리뷰 상태**(긍정적/복합적/확인불가)와 순위의 관계
-4. **지역별 유저 분포** (중국어권 비중)
-
-### 작성 가이드:
-- title: 7단어 이내의 명확한 제목 (예: "체험판이 성공의 열쇠")
-- description: 반드시 구체적 수치 포함 (예: "TOP 10 중 5개가...", "70%가...")
-```
-
----
-
-## 📝 프롬프트 3: TOP 10 테이블 (03_top10_table.csv)
-
-```
-TOP10 게임 종합 평가 데이터를 정제하여 **테이블 형식**으로 출력해주세요.
-
-### 출력 형식 (CSV):
-rank,name,genre,review_status,review_count,wishlist_before,wishlist_after,wishlist_increase,wishlist_percent,top_language,chart_count
-1,{게임명},{장르},{리뷰상태},{리뷰수},{참여전찜},{참여후찜},{증가량},{증가율%},{1위언어},{차트인횟수}
-
-### 게임명 매핑:
-- app/3576170 → 빈딕투스: 디파잉 페이트
-- app/3504780 → 와일드 게이트  
-- app/2841820 → Jump Ship
-- app/2827200 → MIMESIS
-- app/3763830 → Zoochosis
-- app/2373990 → 나 혼자만 레벨업: 어라이즈
-- app/3105890 → PIONER
-- app/3640000 → Holstin
-- app/3023930 → UFL
-- app/3201010 → Starlight ReVolver
-
-### 장르 매핑 (TOP50 데이터 참조):
-- 순위 1 → 액션 RPG
-- 순위 2 → 슈팅
-- 순위 3 → 슈팅
-- 순위 4 → 공포
-- ... (TOP50 데이터의 장르 컬럼 참조)
-```
-
----
-
-## 📝 프롬프트 4: TOP 10 차트 데이터 (04_top10_charts.csv)
-
-```
-TOP 10 게임의 시각화용 차트 데이터를 생성해주세요.
-
-### 출력 형식 (CSV):
-chart_type,label,value,color
-wishlist_top5,{게임명},{찜증가량},#0047AB
-wishlist_top5,{게임명},{찜증가량},#3B82F6
-review_dist,압도적 긍정,{개수},#003380
-review_dist,매우 긍정적,{개수},#0047AB
-review_dist,복합적,{개수},#60A5FA
-review_dist,확인불가,{개수},#94A3B8
-genre_dist,{장르명},{개수},#색상코드
-
-### 차트 종류:
-1. wishlist_top5: 찜 수 증가 TOP 5 (막대 차트)
-2. review_dist: 리뷰 상황 분포 (도넛 차트)
-3. genre_dist: 장르 분포 (도넛 차트)
-```
-
----
-
-## 📝 프롬프트 5: TOP 50 테이블 (05_top50_table.csv)
-
-```
-가장 많이 플레이한 TOP50 게임 데이터를 정제해주세요.
-
-### 출력 형식 (CSV):
-rank,name,genre,play_type,demo_available,release_date,chart_count,notes
-1,{게임명},{장르},{멀티/싱글},{가능/불가능},{출시일},{차트인횟수},{참고사항}
-
-### 데이터 정제 규칙:
-- name: Steam URL에서 게임명 추출 (알려진 게임은 한글명 사용)
-- demo_available: "가능" → true, "불가능" → false
-- play_type: "멀티플레이" → "멀티", "싱글 플레이" → "싱글"
-- chart_count: 빈 값은 0으로 처리
-```
-
----
-
-## 📝 프롬프트 6: TOP 50 차트 데이터 (06_top50_charts.csv)
-
-```
-TOP 50 게임의 시각화용 통계 데이터를 생성해주세요.
-
-### 출력 형식 (CSV):
-chart_type,label,value,color,percentage
-genre_dist,{장르명},{개수},{색상},{비율%}
-play_type,멀티플레이,{개수},#0047AB,{비율%}
-play_type,싱글플레이,{개수},#60A5FA,{비율%}
-demo_avail,체험판 제공,{개수},#0047AB,{비율%}
-demo_avail,체험판 없음,{개수},#94A3B8,{비율%}
-
-### 분석 항목:
-1. genre_dist: 장르별 분포 (로그라이크, 슈팅, 액션, 시뮬레이션, 공포, 기타)
-2. play_type: 멀티플레이 vs 싱글플레이 비율
-3. demo_avail: 체험판 제공 vs 미제공 비율
-```
-
----
-
-## 📤 출력 파일 목록
-
-| 파일명 | 용도 | 대시보드 위치 |
-|--------|------|--------------|
-| `01_kpi_cards.csv` | KPI 2개 | TOP Games - 상단 |
-| `02_key_findings.csv` | 핵심 성과 4개 | TOP Games - 요약 영역 |
-| `03_top10_table.csv` | TOP 10 테이블 | TOP Games - TOP 10 탭 |
-| `04_top10_charts.csv` | TOP 10 차트 | TOP Games - TOP 10 차트 |
-| `05_top50_table.csv` | TOP 50 테이블 | TOP Games - TOP 50 탭 |
-| `06_top50_charts.csv` | TOP 50 차트 | TOP Games - TOP 50 차트 |
-
----
-
-## ✅ 출력 예시
-
-### 01_kpi_cards.csv
+### 스키마
 ```csv
 id,icon,value,label,sublabel,highlight
-1,📈,+70만 찜,SNF 기간 총 찜 수 증가,TOP 10 합계,
-2,🚀,+15만 찜,1위 게임 성과,+25.6% 증가,빈딕투스
 ```
 
-### 02_key_findings.csv
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| id | 숫자 | 순번 1-2 | `1` |
+| icon | 이모지 | KPI 아이콘 | `📈` |
+| value | 문자열 | 핵심 수치 (**쉼표 금지**) | `+716K 찜` |
+| label | 문자열 | 지표명 | `SNF 기간 총 찜 수 증가` |
+| sublabel | 문자열 | 부가 설명 | `TOP 10 합계` |
+| highlight | 문자열 | 강조할 게임명 (선택) | `빈딕투스` |
+
+### 출력 예시
+```csv
+id,icon,value,label,sublabel,highlight
+1,📈,+716K 찜,SNF 기간 총 찜 수 증가,TOP 10 합계,
+2,🚀,+151K 찜,1위 게임 성과,+25.6% 증가,빈딕투스
+```
+
+---
+
+## 📝 CSV 2: 핵심 성과 요약 (02_key_findings.csv)
+
+### 스키마
 ```csv
 id,icon,title,description,border_color
-1,🎮,체험판이 성공의 열쇠,TOP 10 중 5개 게임이 체험판 페이지 접속 가능. 체험판을 제공하면 유저 관심도가 크게 높아집니다.,#0047AB
-2,👥,멀티플레이가 대세,TOP 10 중 7개가 멀티플레이 게임. 협동/경쟁 요소가 SNF에서 강력한 경쟁력이 됩니다.,#3B82F6
-3,⭐,긍정 리뷰가 증명,TOP 10 중 4개가 긍정적 이상 리뷰. 품질이 검증된 게임들이 상위권을 차지했습니다.,#F59E0B
-4,🌏,중국어권이 핵심,대부분의 TOP 게임 리뷰 언어 1위가 간체 중국어. 중국 시장 공략이 성공의 필수 요소입니다.,#8B5CF6
 ```
 
-### 04_top10_charts.csv
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| id | 숫자 | 순번 1-4 | `1` |
+| icon | 이모지 | 발견점 아이콘 | `🎮` |
+| title | 문자열 | 제목 (10자 이내) | `체험판이 성공의 열쇠` |
+| description | 문자열 | 상세 설명 (50-80자) | `TOP 10 중 5개 게임이...` |
+| border_color | HEX | 카드 테두리 색상 | `#0047AB` |
+
+### 출력 예시
 ```csv
-chart_type,label,value,color
-wishlist_top5,빈딕투스,151605,#0047AB
-wishlist_top5,Jump Ship,89715,#3B82F6
-wishlist_top5,Zoochosis,90281,#0047AB
-wishlist_top5,나혼자레벨업,72929,#0047AB
-wishlist_top5,PIONER,82890,#8B5CF6
-review_dist,압도적 긍정,2,#003380
-review_dist,매우 긍정적,1,#0047AB
-review_dist,복합적,1,#60A5FA
-review_dist,확인불가,6,#94A3B8
-genre_dist,액션 RPG,2,#003380
-genre_dist,슈팅,2,#0047AB
-genre_dist,공포,2,#3B82F6
-genre_dist,기타,4,#94A3B8
+id,icon,title,description,border_color
+1,🎮,체험판이 성공의 열쇠,TOP 10 중 4개 게임이 체험판 페이지 접속 가능. 체험판을 제공하면 유저 관심도가 크게 높아집니다.,#0047AB
+2,👥,멀티플레이가 대세,TOP 10 중 8개가 멀티플레이 게임. 협동/경쟁 요소가 SNF에서 강력한 경쟁력이 됩니다.,#3B82F6
+3,⭐,긍정 리뷰가 중요,TOP 10 중 3개가 긍정적 이상 리뷰. 긍정적 평가가 게임 성공에 큰 영향을 미칩니다.,#F59E0B
+4,🌏,중국어권이 핵심,TOP 10 중 4개 게임 리뷰에 간체 중국어가 포함. 중국 시장 공략이 잠재 고객 확보에 중요합니다.,#8B5CF6
 ```
 
-### 06_top50_charts.csv
+---
+
+## 📝 CSV 3: TOP 10 탭 insight-box (03_top10_insight.csv) **신규**
+
+### 스키마
 ```csv
-chart_type,label,value,color,percentage
-genre_dist,로그라이크,14,#003380,28%
-genre_dist,슈팅,8,#0047AB,16%
-genre_dist,액션,6,#3B82F6,12%
-genre_dist,시뮬레이션,6,#60A5FA,12%
-genre_dist,공포,5,#93C5FD,10%
-genre_dist,기타,11,#94A3B8,22%
-play_type,멀티플레이,27,#0047AB,54%
-play_type,싱글플레이,23,#60A5FA,46%
-demo_avail,체험판 제공,29,#0047AB,58%
-demo_avail,체험판 없음,21,#94A3B8,42%
+id,tab_name,insight_text
+```
+
+### 용도
+- TOP 10 탭 상단의 insight-box (`💡 이 차트의 특징:`) 텍스트
+- 하드코딩된 텍스트를 동적으로 변경
+
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| id | 숫자 | 순번 | `1` |
+| tab_name | 문자열 | 탭 식별자 | `top10` |
+| insight_text | 문자열 | 인사이트 텍스트 (100자 내외) | `SNF 기간 중 실제로...` |
+
+### 출력 예시
+```csv
+id,tab_name,insight_text
+1,top10,SNF 기간 중 실제로 가장 많이 플레이된 게임들입니다. 리뷰 수와 찜 수 증가가 모두 뛰어난 검증된 타이틀들이에요. 간체 중국어 유저들의 활동이 특히 활발했습니다.
+```
+
+---
+
+## 📝 CSV 4: TOP 10 테이블 (03_top10_table.csv)
+
+### 스키마
+```csv
+rank,name,genre,review_status,review_count,wishlist_increase,wishlist_percent,chart_count,steamdb_rank
+```
+
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| rank | 숫자 | 순위 1-10 | `1` |
+| name | 문자열 | 게임명 | `빈딕투스: 디파잉 페이트` |
+| genre | 문자열 | 장르 | `액션 RPG` |
+| review_status | 문자열 | 리뷰 상태 | `복합적` / `매우 긍정적` / `압도적 긍정` / `확인불가` |
+| review_count | 문자열 | 리뷰 수 (쉼표 금지) | `5200` / `-` |
+| wishlist_increase | 문자열 | 찜 증가량 | `+151605` |
+| wishlist_percent | 문자열 | 증가율 | `+25.6%` |
+| chart_count | 숫자 | 차트인 횟수 | `14` |
+| steamdb_rank | 문자열 | 스팀DB 찜 랭크 | `31위` |
+
+### 출력 예시
+```csv
+rank,name,genre,review_status,review_count,wishlist_increase,wishlist_percent,chart_count,steamdb_rank
+1,빈딕투스: 디파잉 페이트,액션 RPG,복합적,5200,+151605,+25.6%,14,31위
+2,Jump Ship,슈팅 (1인칭),확인불가,1811,+59726,+20.1%,9,96위
+3,와일드게이트,슈팅 (1인칭),매우 긍정적,3297,+89715,+43.2%,15,18위
+4,MIMESIS,공포,확인불가,-,+53825,+43.2%,6,211위
+5,Dead Rising Deluxe Remaster,액션,압도적 긍정,2207,+71933,+85.4%,9,109위
+6,나 혼자만 레벨업: Arise,액션 RPG,확인불가,-,+72929,+18.7%,12,43위
+7,PIONER,MMORPG,확인불가,336,+82890,+27.3%,5,90위
+8,Zoochosis,공포,압도적 긍정,1197,+90281,+134.6%,12,60위
+9,UFL,스포츠 (축구),확인불가,-,+20482,+12.8%,5,203위
+10,Starlight Re:Volver,로그라이크,확인불가,-,+13209,+58.4%,1,286위
+```
+
+---
+
+## 📝 CSV 5: TOP 50 탭 insight-box (04_top50_insight.csv) **신규**
+
+### 스키마
+```csv
+id,tab_name,insight_text
+```
+
+### 출력 예시
+```csv
+id,tab_name,insight_text
+1,top50,TOP 50까지 확장하면 다양한 인디 게임들도 포함됩니다. 로그라이크 장르가 압도적으로 많고 멀티플레이 게임이 싱글플레이보다 약간 더 많습니다. 체험판 제공 여부가 성공에 큰 영향을 미쳤어요.
+```
+
+---
+
+## 📝 CSV 6: TOP 50 요약 카드 (05_top50_summary.csv) **신규**
+
+### 스키마
+```csv
+id,icon,title,value,description,color
+```
+
+### 용도
+- TOP 50 탭 상단의 3개 요약 카드 데이터
+
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| id | 숫자 | 순번 1-3 | `1` |
+| icon | 이모지 | 카드 아이콘 | `🎮` |
+| title | 문자열 | 카드 제목 | `체험판 접속 가능` |
+| value | 문자열 | 핵심 수치 | `29개` |
+| description | 문자열 | 부가 설명 | `TOP 50 중 58%` |
+| color | HEX | 제목 색상 | `#0047AB` |
+
+### 출력 예시
+```csv
+id,icon,title,value,description,color
+1,🎮,체험판 접속 가능,29개,TOP 50 중 58%,#0047AB
+2,👥,멀티플레이,27개,54% (싱글 23개),#3B82F6
+3,🎯,최다 장르,로그라이크,14개 게임 (28%),#8B5CF6
+```
+
+---
+
+## 📝 CSV 7: TOP 50 테이블 (05_top50_table.csv)
+
+### 스키마
+```csv
+rank,name,genre,demo_available,play_type,release_date,chart_count
+```
+
+### 컬럼 설명
+| 컬럼 | 타입 | 설명 | 예시 |
+|------|------|------|------|
+| rank | 숫자 | 순위 1-50 | `1` |
+| name | 문자열 | 게임명 | `빈딕투스: 디파잉 페이트` |
+| genre | 문자열 | 장르 | `액션 RPG` |
+| demo_available | 문자열 | 체험판 여부 | `✓` / `✗` |
+| play_type | 문자열 | 플레이 타입 | `멀티` / `싱글` |
+| release_date | 문자열 | 출시일 | `출시예정` / `2025.07.23` |
+| chart_count | 숫자 | 차트인 횟수 | `14` |
+
+### 출력 예시 (처음 10개만)
+```csv
+rank,name,genre,demo_available,play_type,release_date,chart_count
+1,빈딕투스: 디파잉 페이트,액션 RPG,✓,멀티,출시예정,14
+2,Jump Ship,슈팅 (1인칭),✗,멀티,2025.07.23,9
+3,와일드게이트,슈팅 (1인칭),✓,멀티,2025년,15
+4,MIMESIS,공포,✗,멀티,2025년 3분기,6
+5,Dead Rising Deluxe Remaster,액션,✓,싱글,출시예정,9
+6,나 혼자만 레벨업: Arise,액션 RPG,✗,멀티,2025년,12
+7,PIONER,MMORPG,✗,멀티,2025년,5
+8,Zoochosis,공포,✓,싱글,2025년 3분기,12
+9,UFL,스포츠 (축구),✗,멀티,출시예정,5
+10,Starlight Re:Volver,로그라이크,✗,멀티,2025년 3분기,1
 ```
 
 ---
