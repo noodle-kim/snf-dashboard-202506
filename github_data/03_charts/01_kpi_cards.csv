@@ -1,4 +1,4 @@
-id,icon,value,label,description,color,game_name,tags
+﻿id,icon,value,label,description,color,game_name,tags
 1,📊,150회,총 차트 노출,SNF 기간 3종 차트 총 노출,#0047AB,,
 2,🎯,15회 차트 진입,최다 차트인 게임,Jump Ship,#10B981,Jump Ship,인기 출시 예정 1위|떠오르는 출시 예정 1위
 3,🎮,33%,차트 균등 배분,각 차트별 동일한 비율,#8B5CF6,,

@@ -208,7 +208,7 @@ def generate_csv_files(stats):
     
     # 1. Executive Summary KPI Cards
     kpi_csv = os.path.join(OUTPUT_DIR, "01_executive", "02_kpi_cards.csv")
-    with open(kpi_csv, 'w', encoding='utf-8', newline='') as f:
+    with open(kpi_csv, 'w', encoding='utf-8-sig', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['id', 'icon', 'value', 'label', 'sublabel', 'color'])
         writer.writerow([1, '📊', f'{stats["chart_total_entries"]}회', '총 차트 노출', 'SNF 기간 3종 차트', '#0047AB'])
@@ -220,7 +220,7 @@ def generate_csv_files(stats):
     # 2. Chart Summary (Executive)
     chart_summary_csv = os.path.join(OUTPUT_DIR, "01_executive", "05_chart_summary.csv")
     top_game, top_count = stats['top_chart_games'][0]
-    with open(chart_summary_csv, 'w', encoding='utf-8', newline='') as f:
+    with open(chart_summary_csv, 'w', encoding='utf-8-sig', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['id', 'icon', 'value', 'label', 'description'])
         writer.writerow([1, '📊', f'{stats["chart_total_entries"]}회', '총 차트 노출', f'3종 차트 총 노출 횟수'])
@@ -243,7 +243,7 @@ def generate_csv_files(stats):
     
     tags_str = '|'.join(champion_tags) if champion_tags else ''
     
-    with open(charts_kpi_csv, 'w', encoding='utf-8', newline='') as f:
+    with open(charts_kpi_csv, 'w', encoding='utf-8-sig', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['id', 'icon', 'value', 'label', 'description', 'color', 'game_name', 'tags'])
         writer.writerow([1, '📊', f'{stats["chart_total_entries"]}회', '총 차트 노출', 'SNF 기간 3종 차트 총 노출', '#0047AB', '', ''])
