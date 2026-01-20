@@ -251,6 +251,24 @@ def generate_csv_files(stats):
         writer.writerow([3, '🎮', '33%', '차트 균등 배분', '각 차트별 동일한 비율', '#8B5CF6', '', ''])
     print(f"✅ 생성: {charts_kpi_csv}")
     
+    # 4. SNF 전략 카드 (데이터 기반 인사이트)
+    snf_strategy_csv = os.path.join(OUTPUT_DIR, "03_charts", "09_snf_strategy.csv")
+    
+    # 데이터 기반 전략 생성
+    demo_insight = f"TOP 10 중 {stats['top10_demo']}개({stats['top10_demo']*10}%)가 체험판 제공|체험판 차트가 가장 안정적|5일 연속 TOP 10 유지 시 효과 극대화|빈딕투스가 인기 체험판 1위 3회 달성"
+    
+    popular_insight = f"Jump Ship이 인기 출시 예정 1위 3회 기록|TOP 10 중 {stats['top10_multi']}개({stats['top10_multi']*10}%)가 멀티플레이|SNF 전 사전 찜 확보가 핵심|대형 타이틀과 경쟁 필요"
+    
+    trending_insight = f"Jump Ship이 떠오르는 차트 1위도 달성|인디 게임에게 상대적 기회|차별화된 컨셉으로 입소문 유도|커뮤니티 반응에 빠르게 대응 필요"
+    
+    with open(snf_strategy_csv, 'w', encoding='utf-8-sig', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['id', 'icon', 'title', 'color', 'details'])
+        writer.writerow([1, '🔥', '인기 체험판 공략', '#0047AB', demo_insight])
+        writer.writerow([2, '⭐', '인기 출시 예정 도전', '#0047AB', popular_insight])
+        writer.writerow([3, '🚀', '떠오르는 게임 진입', '#3B82F6', trending_insight])
+    print(f"✅ 생성: {snf_strategy_csv}")
+    
     print("\n✅ 모든 CSV 파일 생성 완료!")
 
 
